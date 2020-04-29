@@ -1,0 +1,259 @@
+
+ CM1 Numerical Model, release 18.3  (cm1r18.3):
+ 7 October 2015
+
+ Summary of changes.
+
+-------------------------------------------------------------
+1.  New options/features.
+
+ - Added the horizontal momentum forcing scheme from Morrison et al 
+   (2015, JAS, pg 315) as an initialization option.  See iinit = 10 in 
+   README.namelist and init3d.F for more information.
+
+ - Added the Revised Surface Layer scheme from WRF.  See Jimenez et al, 
+   2012, MWR, pg 898.  Set sfcmodel = 3 to use this scheme. 
+
+ - Restart files can now be written in netcdf format.  See new option 
+   "restart_format" in namelist.input, and see README.namelist for more
+   information.  (By default, unformatted binary files remain the 
+   default format for restart files.) 
+
+ - The default option for restart files is now to write only one file
+   (as opposed to one file per node, which was the default in cm1r17).
+   [The previous option is still available as restart_filetype = 2]
+   One consequence of this new option is that users can change the number 
+   of processors on a restart (if desired). 
+
+ - Added the option to integrate the compressible-Boussinesq equation 
+   set.  (psolver=6)  This equation set produces similar results to
+   the incompressible equations, but permits acoustic waves, and thus can
+   be solved with a split-explicit integration scheme.  [See, eg, Bryan 
+   and Rotunno, 2014, JAS, pg 1126 for more information.]
+
+ - Added an option to enforce conservation of total dry-air mass by 
+   adjusting the average perturbation pressure.  Only needed for long 
+   (several day) simulations.  See "apmasscon" option in README.namelist
+   for more information.
+
+ - Added a namelist option called "run_time".  When this variable is a 
+   positive number, the setting for total model integration time (timax)
+   is ignored, and the model with integrate for run_time seconds from the
+   current time.  This option can be useful for model restarts. 
+
+ - Changed the formulation of the horizontal turbulence length scale in 
+   iturb=3 (the "parameterized turbulence" scheme) over oceans.  Instead 
+   of a constant value (l_h), the turbulence lengthscale varies linearly 
+   with surface pressure.  Two new namelist variables (lhref1 and lhref2) 
+   can be used to define this linear relationship.  This new formulation 
+   is useful for reducing horizontal diffusion for ordinary convection 
+   over oceans, but allowing for larger lengthscales near the inner-core
+   of strong hurricanes.
+
+ - Made a major change to the split-explicit solvers (psolver=2,3).
+   The 1d base-state profiles are no longer used for vertical advection
+   tendencies;  instead, the 3d fields of theta and pi from the most
+   recent RK step are used for 3d advection on small steps (following
+   Klemp et al, 2007, MWR, pg 2901).  This change addresses a few 
+   minor problems (especially for near-surface profiles with terrain) 
+   and reduces artificial diffusion for some cases. 
+
+ - Related to the previous change, code has been added to calculate 
+   average velocity over the small time steps.   These fields are then 
+   used to advect moisture and passive tracers, and to integrate 
+   parcels.  These changes reduce some negative impacts of acoustic waves,
+   especially for parcel trajectory calculations. 
+
+ - New output variables:
+
+       2D:  - Surface pressure (psfc).  
+              (Note:  this is different from pressure at the lowest 
+              model level, which is located at +dz/2 above the surface.)
+              (see output_psfc in namelist.input)
+
+       3D:  - Potential vorticity (dry formulation).
+              (see output_pv in namelist.input)
+
+            - Dissipative heating tendency.
+              (see output_dissheat in namelist.input)
+
+            - Potential-temperature tendency from microphysics scheme.
+              (see output_mptend in namelist.input)
+
+            - Fall velocities of hydrometeors.
+              (see output_fallvel in namelist.input)
+
+       stats:  - Max/Min surface pressure (psfcmax,psfcmin).
+              (Note:  this is different from pressure at the lowest 
+              model level, which is located at +dz/2 above the surface.)
+
+ - Users can now choose what variables to output along parcel trajectories 
+   (for iprcl=1).  See param13 section of namelist.input and README.namelist 
+   for more information.  
+
+
+   -------------------
+    cm1r18.2:
+
+ - Added the ability to write additional variables to restart files.  This
+   capability is important for some applications (like ensemble data
+   assimilation systems) that make use of variables like reflectivity and
+   diabatic heating tendency.  
+   [Note:  this capability was added to cm1r18.1, but modified in cm1r18.2 
+    to use variables from namelist.input]
+
+ - New output variables:
+
+            - Water vapor mixing ratio of surface (i.e., land/ocean)
+
+
+   -------------------
+    cm1r18.3:
+
+ - For netcdf files (both output files and restart files) several "global"
+   variables have been added, such as boundary-condition settings, physics 
+   scheme settings, Coriolis parameter, and several parameters entered by 
+   users in namelist.input.  (Note:  does not change results, but added for 
+   informative purposes.)
+
+ - Several new variables are now available in the param9 section of 
+   namelist.input related to restarts.  See README.namelist for more 
+   information (note variable names that begin with "restart_").
+
+ - For netcdf-format restart files (restart_format=2), added the ability to
+   write only one restart file (that can have many time levels within it). 
+   This option is now restart_filetype=1.  The previously available option 
+   (one restart file per restart time) is still available as 
+   restart_filetype=2.
+
+
+
+-------------------------------------------------------------
+2.  Changes, fixes, modifications, etc.
+
+ - Fixed a major bug with the CM1 surface flux scheme (sfcmodel=1) when 
+   using terrain.  The code previously utilized height above sea level, 
+   rather than the height above ground level.  (No change in results for
+   simulations without terrain.)  Many thanks to Stefano Serafin (University
+   of Vienna) and his collaborators for finding this bug. 
+   (sfcphys.F, turb.F)
+
+ - For subgrid turbulence schemes (iturb=1,2,3), the vertically implicit 
+   solver is now used at all grid points for all simulations.  The code was 
+   also modified to increase performance, and reduce memory usage. 
+   (turb.F)
+
+ - Added extra documentation to subgrid turbulence code.  Moved some 
+   calculations for readability. 
+   (turb.F)
+
+ - The writeout routines for MPI runs have been completely re-written. 
+   Three-dimensional output (with output_filetype=1,2) is now much more 
+   efficient for simulations with several thousand processors.
+   (writeout.F)
+
+ - Made some changes in the primary cm1 solver to reduce roundoff error
+   for calculation of pressure tendencies.  Leads to better mass conservation.
+   (solve.F)
+
+ - Upgraded the solver for the parcel driver from Euler-forward to 
+   second-order Runge-Kutta.  
+   (parcel.F)
+
+ - For simulations with semi-slip lower boundary condition (bbc=3), the 
+   parcel code now utilizes the log-layer equations for parcels than are 
+   between the surface and the lowest half-level. 
+   (parcel.F)
+
+ - Fixed various bugs wrt array out-of-bounds problems for simulations 
+   without moisture, and simulations with shallow (< 5 km) domains.
+   (misclibs.F, turb.F)
+
+ - For the Morrison microphysics scheme, code has been added to 
+   include "EVPMS" and "EVPMG" (evaporation of metlted hail and 
+   melted graupel/hail) to the evaporation rate in stats output.
+   Does not change results;  only changes "tevar" output variable.
+   (morrison.F)
+
+ - Fixed a problem with output of theta and qv fluxes at surface when 
+   using a PBL scheme.  Thanks to Chris Davis for pointing out this
+   error.  
+   (turb.F)
+
+ - Fixed a bug with the YSU scheme that was introduced in cm1r17. 
+   (An incorrect surface-layer variable was being passed into ysu.F)
+   (turb.F)
+
+ - Fixed a bug in which vertical eddy viscosities were not always 
+   written correctly when using a PBL scheme. 
+   (turb.F)
+
+ - Fixed some very minor bugs in the diff2 subroutines (used for DNS). 
+   Thanks to Dave Nolan and Nathan Dahl (U. Miami) for helping flush out 
+   these bugs.
+   (diff2.F)
+
+ - Updated the Morrison microphysics scheme.  See documentation near the 
+   top of the morrison.F file for more information.  Thanks to Hugh Morrison 
+   of NCAR.
+   (morrison.F)
+
+ - Updated the NSSL microphysics scheme.  Thanks to Ted Mansell of 
+   NOAA/NSSL.
+   (module_mp_nssl_2mom.F)
+
+ - Updated the surface layer and YSU schemes.  Versions are now from 
+   WRF 3.7. 
+   (sfclay.F, sfclayrev.F, ysu.F)
+
+ - Made some improvements to speed up MPI communication.
+   (comm.F, solve.F, sound.F, pdef.F, parcel.F, etc)
+
+ - Made several changes to the adaptive timestepping scheme to increase 
+   peformance and stability.  
+   (solve.F, misclibs.F)
+
+ - Made a minor modification to the calculation of dissipative heating 
+   near the surface. 
+   (turb.F, solve.F)
+
+ - Fixed dissipative heating for iturb=2,3 (which was only being calculated
+   at the lowest model level in cm1r17). 
+   (turb.F)
+
+ - Radiative tendency output (lwten,swten) have been changed from temperature 
+   tendencies to potential-temperature tendencies. 
+   (writeout.F)
+
+ - Miscellaneous bug fixes, clarifications, and improvements.
+   (nearly all files)
+
+   -------------------
+    cm1r18.1:
+
+ - Fixed an error with the calculation of radiative temperature tendencies
+   that was introduced in cm1r17.  Thanks to Marty Singh and Hamish Ramsay.
+   (solve.F, radtrns3d.F)
+
+   -------------------
+    cm1r18.2:
+
+ - Fixed an error with the calculation of surface temperature over land.
+   The code now properly accounts for surface albedo, and results in much 
+   lower surface temperatures when surface albedo is large.  (Does not 
+   affect ocean/water surfaces, and has a small effect on land surfaces 
+   with low albedo.)  Thanks to Teddie Keller and Bob Sharman of NCAR/RAL
+   for pointing out this error. 
+   (turb.F)
+
+   -------------------
+    cm1r18.3:
+
+ - Fixed a bug for restarts with adaptive timestepping and ptype=2 or ptype=4.
+   (Thanks to Luke Madaus of Univ Washington.)
+   (cm1.F)
+
+ - Fixed a bug for restarts when using open lateral boundary conditions and 
+   either nodex=1 or nodey=1.  (Thanks to Johnny Hendricks of NCAR/CISL.)
+
+
