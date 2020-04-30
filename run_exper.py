@@ -113,7 +113,6 @@ if options.exp == None:
     sys.exit(-1)
 else:
     with open(options.exp, 'rb') as f:
-        #        exper = pickle.load(f)
         exper = json.load(f)
 
 
@@ -271,11 +270,10 @@ for n, t in enumerate(time[:-1]):
     cwd = os.getcwd()
     newcmd = os.path.join(cwd, cmd)
 
-    print(("\n\n"+newcmd+"\n"))
+    print("\n"+newcmd+"\n")
     
     if RunIt:  
-      os.system(newcmd)
-   #  master_output, master_error = run_unix_cmd(newcmd)
+      run_unix_cmd(newcmd)
    #  print(("\nSTDOUT: %s " % master_output)) 
    #  print(("\nSTDERR: %s " % master_error))
     
@@ -326,10 +324,9 @@ for n, t in enumerate(time[:-1]):
     print(("\n\n"+newcmd+"\n"))
     
     if RunIt:  
-      os.system(newcmd)
-  #   master_output, master_error = run_unix_cmd(newcmd)
-  #   print(("\nSTDOUT: %s " % master_output)) 
-  #   print(("\nSTDERR: %s " % master_error))
+      master_output, master_error = run_unix_cmd(newcmd)
+      print(("\nSTDOUT: %s " % master_output)) 
+      print(("\nSTDERR: %s " % master_error))
 
     print(("\n#==> run_Exper: Integrated ensemble members to time: %s\n" % ( later_DT.strftime("%Y-%m-%d_%H:%M:%S"))))
     

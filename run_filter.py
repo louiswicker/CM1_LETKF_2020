@@ -86,7 +86,7 @@ if __name__ == "__main__":
 # Set up frequency of assimilation (needed for asynchronous mostly)
 
   if options.freq == None:
-    freq = int(exper['DA_PARAMS']['assim_freq'])
+    freq = - int(exper['DA_PARAMS']['assim_freq'])
     if freq > 0:
       print(("\n --> Run_Filter:  using Asynchronous DA with freq from EXPER file:  %d secs" % (freq)))
     else:
