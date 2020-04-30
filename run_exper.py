@@ -61,9 +61,9 @@ if options.init:
         newcmd = os.path.join(cwd, cmd)
         if RunIt:
             print(("Running  %s" % newcmd))
-            master_output, master_error = run_unix_cmd(newcmd)
-            print(("\n ==> run_Exper: ic_cmds:  STDOUT: %s " % master_output))
-            print(("\n ==> run_Exper: ic_cmds:  STDERR: %s " % master_error))
+            os.system(newcmd)
+        #   print(("\n ==> run_Exper: ic_cmds:  STDOUT: %s " % master_output))
+        #   print(("\n ==> run_Exper: ic_cmds:  STDERR: %s " % master_error))
         else:
            print(("%s" % newcmd))
 
@@ -274,9 +274,10 @@ for n, t in enumerate(time[:-1]):
     print(("\n\n"+newcmd+"\n"))
     
     if RunIt:  
-      master_output, master_error = run_unix_cmd(newcmd)
-      print(("\nSTDOUT: %s " % master_output)) 
-      print(("\nSTDERR: %s " % master_error))
+      os.system(newcmd)
+   #  master_output, master_error = run_unix_cmd(newcmd)
+   #  print(("\nSTDOUT: %s " % master_output)) 
+   #  print(("\nSTDERR: %s " % master_error))
     
     cpu_enkf = cpu_enkf + cpu.time() - c0
 
@@ -300,9 +301,10 @@ for n, t in enumerate(time[:-1]):
     print(("\n\n"+newcmd+"\n"))
 
     if RunIt:  
-      master_output, master_error = run_unix_cmd(newcmd)
-      print(("\nSTDOUT: %s " % master_output)) 
-      print(("\nSTDERR: %s " % master_error))
+      os.system(newcmd)
+   #  master_output, master_error = run_unix_cmd(newcmd)
+   #  print(("\nSTDOUT: %s " % master_output)) 
+   #  print(("\nSTDERR: %s " % master_error))
 
     cpu_correct = cpu_correct + cpu.time() - c0
 
@@ -324,9 +326,10 @@ for n, t in enumerate(time[:-1]):
     print(("\n\n"+newcmd+"\n"))
     
     if RunIt:  
-      master_output, master_error = run_unix_cmd(newcmd)
-      print(("\nSTDOUT: %s " % master_output)) 
-      print(("\nSTDERR: %s " % master_error))
+      os.system(newcmd)
+  #   master_output, master_error = run_unix_cmd(newcmd)
+  #   print(("\nSTDOUT: %s " % master_output)) 
+  #   print(("\nSTDERR: %s " % master_error))
 
     print(("\n#==> run_Exper: Integrated ensemble members to time: %s\n" % ( later_DT.strftime("%Y-%m-%d_%H:%M:%S"))))
     

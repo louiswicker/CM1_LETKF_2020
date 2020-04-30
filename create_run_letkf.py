@@ -19,7 +19,7 @@ _microphysics_options = {"morrison": 5, "zvdLFO":  28, "thompson": 3, "zvd": 26,
 defaults = {
             "base_dir":  "RUN_LETKF",
             "fprefix":   "cm1out",
-            "ne":         30,
+            "ne":         20,
             "model":     "cm1r18v3/run/cm1.exe",
             "src":       "cm1r18v3/run/oneFile.F",
             "namelist":  "cm1r18v3/run/namelist.input",
@@ -61,8 +61,8 @@ defaults = {
 
             "IC_BOX": {
                        'nb':             3,
-                       'tpert':        2.0,
-                       'wpert':        1.0,
+                       'tpert':        1.0,
+                       'wpert':        0.5,
                        'tdpert':       0.0,
                        'upert':        0.0,
                        'vpert':        0.0,
@@ -108,10 +108,10 @@ defaults = {
                            "nthreads":            12,       # type(int):  number of threads used to run the ensemble members and enkf (if parallel)
                            "assim_window":       300,       # type(int):  window for assimilation
                                                             #             (note that the assim window will be +/- (assim_window/2) )
-                           "assim_freq":         300,       # type(int):  used to set asynchronous DA assimilation
+                           "assim_freq":        -300,       # type(int):  used to set asynchronous DA assimilation
                            "async_freq":         300,
                            "cook":              1200,       # type(int): time to pre-cook initial perturbations
-                           "additive_noise":    [True,1],   # type(list): whether to add noise based on 1=cref, 2 = adaptive-inflation field
+                           "additive_noise":    [True,2],   # type(list): whether to add noise based on 1=cref, 2 = adaptive-inflation field
                            "mpass":             False,
                            "writeFcstMean":     True,
                            "writeAnalMean":     True,

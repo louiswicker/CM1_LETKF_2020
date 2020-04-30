@@ -53,11 +53,11 @@ _truelat1, _truelat2 = 30.0, 60.0
 #-----------------------------------------------------------------------------------------------------------------------------
 # Plotting defaults for 4 panel plots
 
-try:
-  from Plotting import shapefiles
-except:
-  print("\n Cannot import shapefiles....")
-  shapefiles = None
+#try:
+#  from Plotting import shapefiles
+#except:
+#  print("\n Cannot import shapefiles....")
+#  shapefiles = None
 
 # Use a blue-->red diverging cmap to represent neg/pos fields
 
@@ -91,7 +91,6 @@ def FindRestartFiles(exper_filename, myDT, ret_exp=True, ret_DT=True):
         exper = exper_filename
     else:
         with open(exper_filename, 'rb') as p:
-#            exper = pickle.load(p)
             exper = json.load(p)
 
 # Figure out how myDT is being passed, and then convert to DT object
@@ -138,7 +137,7 @@ def FindRestartFiles(exper_filename, myDT, ret_exp=True, ret_DT=True):
         for n, file in enumerate(files):
             f = ncdf.Dataset(file, "r")
             f_time = f.variables['time'][0]
-
+        
             if( N.abs(f_time - time) < 1.0 ):
                 print("\n ==> FindRestartFile:  Found time %d in file:  %s" % (f_time, file))
                 for g in exper['fcst_members']:
@@ -256,7 +255,7 @@ class variable(object):
     return self.__dict__
 
   def addattribute(self, name, attribute):
-    if debug:  print "VAR %s adding attribute:  %s " % (self.name, name)
+    if debug: print("VAR %s adding attribute:  %s " % (self.name, name))
     setattr(self,name,attribute)
 
 #===============================================================================
@@ -291,14 +290,14 @@ class ensemble(variable):
       return self.__dict__
 
   def addvariable(self, name, **kwargs):
-    if debug:  print "ENS adding variable:  ", name
+    if debug:  print("ENS adding variable:  ", name)
     self.__dict__[name] = variable(name, **kwargs)
   
   def addattribute(self, key, name, attribute):
     if isinstance(self.__dict__[key], variable):
       self.__dict__[key].addattribute(name, attribute)
     else:
-      if debug:  print "ENS adding attribute:  ", name
+      if debug:  print("ENS adding attribute:  ", name)
       setattr(self,name,attribute)
 
 #===============================================================================
@@ -577,7 +576,7 @@ def ens_quick4panel(ens, height = None, show=False, sfc=False, zoom=None, member
     fig.savefig(filename, format="pdf", dpi=300)
     
     if show:
-        print filename
+        print(filename)
         os.system("open %s" % filename)
 
     return fig
@@ -1040,13 +1039,15 @@ def ens_IC_pertUV(ens, writeout=False):
 
   if writeout:
 
-    print("\n ==> ens_IC_pertUV: !!!OVERWRITING!!! CM1 Restart files")
+    print("\n ==> ens_IC_pertUV: Now writing CM1 Restart files")
     write_CM1_ens(state, writeEns=True, overwrite=True)
 
 # Remember to do this step AFTER writing out the files.
 # I dont write the base states now back out via the ens_object,
 # I need to write them directly to be consistent.
+
     for n in N.arange(ens.ne):
+
       f = ncdf.Dataset(ens.files[n], "r+")
 
       for k in N.arange(ens.nz):
@@ -1057,6 +1058,7 @@ def ens_IC_pertUV(ens, writeout=False):
       f.close()
 
   else:
+
     print("\n ==> ens_IC_pertUV: ensemble UV perturbations created - BUT NOT WRITTEN BACK OUT!!")
 
 #===============================================================================
@@ -1253,7 +1255,7 @@ def ens_GRID_RELECTIVITY(ens, ob_file=None, plot=False, composite=True):
   ii = indices3D[2]
 
 #   for n in N.arange(data.size) :
-#     print n, xyz_obs[0,n], xyz_obs[1,n], xyz_obs[2,n], z_array[kk[n],jj[n],ii[n]], y_array[kk[n],jj[n],ii[n]], x_array[kk[n],jj[n],ii[n]]
+#     print(n, xyz_obs[0,n], xyz_obs[1,n], xyz_obs[2,n], z_array[kk[n],jj[n],ii[n]], y_array[kk[n],jj[n],ii[n]], x_array[kk[n],jj[n],ii[n]])
 #     print
 # 
 #   
@@ -1355,7 +1357,7 @@ def ens_ADDITIVE_NOISE(ens, ob_file=None, plot=False, cref=True):
 #     p        = ndimage.gaussian_filter(pert, sigma=[gaussV,gaussH,gaussH], order=0)
       p        = 1.0 - 2.0*(p - p.min()) / (p.max()-p.min())
       ens['V'][n] = ens['V'][n] + vpert*p
-      if debugAN:  print "\n ==> ens_ADD_NOISE: VAR:  %s  NE:  %d  Pert_Min:  %f  Pert_Max:  %f" % ("V", n, p.min(), p.max())
+      if debugAN:  print("\n ==> ens_ADD_NOISE: VAR:  %s  NE:  %d  Pert_Min:  %f  Pert_Max:  %f" % ("V", n, p.min(), p.max()))
 
     if wpert > 0:
       raw_pert = fnormal(N.random.RandomState([3+r_seed+n**2]), scale=1.0, size=(ens.nz,ens.ny,ens.nx))
@@ -1373,7 +1375,7 @@ def ens_ADDITIVE_NOISE(ens, ob_file=None, plot=False, cref=True):
 #      p        = ndimage.gaussian_filter(pert, sigma=[gaussV,gaussH,gaussH], order=0)
       p        = 1.0 - 2.0*(p - p.min()) / (p.max()-p.min())
       ens['TH'][n] = ens['TH'][n] + tpert*p
-      if debugAN:  print "\n ==> ens_ADD_NOISE: VAR:  %s  NE:  %d  Pert_Min:  %f  Pert_Max:  %f" % ("TH", n, p.min(), p.max())
+      if debugAN:  print("\n ==> ens_ADD_NOISE: VAR:  %s  NE:  %d  Pert_Min:  %f  Pert_Max:  %f" % ("TH", n, p.min(), p.max()))
       
 # If Tdpert > 0, add dewpoint perturbations to QV - do it in Td space
 
@@ -1419,9 +1421,9 @@ def ens_ADDITIVE_NOISE(ens, ob_file=None, plot=False, cref=True):
   if plot:
     ens_PLOT_MEAN_STDDEV(ens, klevel = 4, savefig="ADDITIVE_NOISE_PLOT.pdf")
        
-  if time_all:  print "\n Wallclock time to run ADDITIVE_NOISE:", round(timer() - t0, 3), " sec"
+  if time_all:  print("\n Wallclock time to run ADDITIVE_NOISE:", round(timer() - t0, 3), " sec")
 
-#===============================================================================#===============================================================================
+#===============================================================================
 #
 def ens_IC_pert_from_box(ens, plot=False, writeout=False):
 
@@ -1445,9 +1447,11 @@ def ens_IC_pert_from_box(ens, plot=False, writeout=False):
   bbleT  = ens.experiment['IC_BOX']['bbletype']
   r_seed = ens.experiment['IC_BOX']['r_seed']
 
+  print(upert, wpert, vpert, tpert, tdpert)
+
   xypertscale = 0.2
   klevel      = 4   # level to plot perturbations
-  me          = ens.ne/2
+  me          = N.int(ens.ne/2)  # which member to plot
 
   xbox = N.array((xbmin, xbmin, xbmax, xbmax, xbmin)) - ens.experiment['xoffset']
   ybox = N.array((ybmin, ybmax, ybmax, ybmin, ybmin)) - ens.experiment['yoffset']
@@ -1465,7 +1469,9 @@ def ens_IC_pert_from_box(ens, plot=False, writeout=False):
       yb = 0.5*(ybmin+ybmax) + xypert[:,1,n]*(ybmax-ybmin)
       zb = zbmax*N.ones(xb.shape) + ens.hgt
 
-    pert    = N.ascontiguousarray(addbubbles_box(rbubh, rbubz, xb, yb, zb, fstate.xc, fstate.yc, fstate.zc, xbmin, xbmax, ybmin, ybmax, bbleT))
+    pert    = N.ascontiguousarray(addbubbles_box(rbubh, rbubz, xb, yb, zb, \
+                                  fstate.xc, fstate.yc, fstate.zc, xbmin, xbmax, ybmin, ybmax, bbleT))
+
     pospert = (pert - pert.min()) / (pert.max()-pert.min())
     neupert = 0.5 - pospert
 
@@ -1512,72 +1518,87 @@ def ens_IC_pert_from_box(ens, plot=False, writeout=False):
     map = mymap(fstate.xc, fstate.yc, ens.lat0, ens.lon0, noticks=False, counties=True)
     lon2d, lat2d, x2d, y2d = map.makegrid(fstate.xc.size, fstate.yc.size, returnxy=True)
 
-    plot = map.contourf(x2d, y2d, ens['TH'][me,klevel,:,:]-ens['TH'][me,klevel,-1,-1], N.linspace(0.0, tpert, num=10), ax = ax1)
-    cbar = map.colorbar(plot, ax=ax1)
-    map.plot(xbox, ybox, color='k', ax=ax1)
-    cbar.set_label('THETA-PERTS')
-    ax1.set_title('THETA-PERTS', fontsize=20)
+    if tpert > 0:
+        plot = map.contourf(x2d, y2d, ens['TH'][me,klevel,:,:] - ens['TH'][me,klevel,-1,-1], N.linspace(0.0, tpert, num=10), \
+                            ax = ax1)
+        cbar = map.colorbar(plot, ax=ax1)
+        map.plot(xbox, ybox, color='k', ax=ax1)
+        cbar.set_label('THETA-PERTS')
+        ax1.set_title('THETA-PERTS', fontsize=20)
 
-    plot = map.contourf(x2d, y2d, 1000.*(ens['QV'][me,klevel,:,:]-ens['QV'][me,klevel,-1,-1]), N.linspace(0.0, tdpert, num=10), ax=ax2)
-    cbar = map.colorbar(plot, ax=ax2)
-    map.plot(xbox, ybox, color='k', ax=ax2)
-    cbar.set_label('QV-PERTS')
-    ax2.set_title('QV-PERTS', fontsize=20)
+        # plot std-dev
 
-    plot = map.contourf(x2d, y2d,ens['U'][me,klevel,:,:]-ens['U'][me,klevel,-1,-1], N.linspace(-upert, upert, num=10), ax=ax3)
-    cbar = map.colorbar(plot, ax=ax3)
-    map.plot(xbox, ybox, color='k', ax=ax3)   
-    cbar.set_label('U-PERTS')
-    ax3.set_title('U-PERTS', fontsize=20)
+        tstd = ens['TH'][:,klevel,:,:].std(axis=0)
+        plot = map.contourf(x2d, y2d, tstd, N.linspace(0.0,tpert,num=10), cmap=ctables.Not_PosDef_Default, ax=ax6)
+        cbar = map.colorbar(plot, ax=ax6)
+        map.plot(xbox, ybox, color='k', ax=ax6) 
+        cbar.set_label('Theta-Perts Stdev')
+        ax6.set_title('Theta-Perts Stdev', fontsize=20)
 
-    plot = map.contourf(x2d, y2d,ens['V'][me,klevel,:,:]-ens['V'][me,klevel,-1,-1], N.linspace(-vpert, vpert, num=10), ax=ax4)
-    cbar = map.colorbar(plot, ax=ax4)
-    map.plot(xbox, ybox, color='k', ax=ax4) 
-    cbar.set_label('V-PERTS')
-    ax4.set_title('V-PERTS', fontsize=20)
+    if qvpert > 0:
+        plot = map.contourf(x2d, y2d, 1000.*(ens['QV'][me,klevel,:,:]-ens['QV'][me,klevel,-1,-1]), N.linspace(0.0, 2.0, num=10), \
+                            ax=ax2)
+        cbar = map.colorbar(plot, ax=ax2)
+        map.plot(xbox, ybox, color='k', ax=ax2)
+        cbar.set_label('QV-PERTS')
+        ax2.set_title('QV-PERTS', fontsize=20)
 
-    plot = map.contourf(x2d, y2d,ens['W'][me,klevel,:,:]-ens['W'][me,klevel,-1,-1], N.linspace(0.0, wpert, num=10), ax=ax5)
-    cbar = map.colorbar(plot, ax=ax5)
-    map.plot(xbox, ybox, color='k', ax=ax5) 
-    cbar.set_label('W-PERTS')
-    ax5.set_title('W-PERTS', fontsize=20)
+        # plot std-dev
 
-# Standard deviations...
+        tstd = 1000.*ens['QV'][:,klevel,:,:].std(axis=0)
+        plot = map.contourf(x2d, y2d, tstd, N.linspace(0.0,qvpert,num=20), cmap=ctables.Not_PosDef_Default, ax=ax7)
+        cbar = map.colorbar(plot, ax=ax7)
+        map.plot(xbox, ybox, color='k', ax=ax7) 
+        cbar.set_label('QV-Perts Stdev')
+        ax7.set_title('QV-Perts Stdev', fontsize=20)
 
-    tstd = ens['TH'][:,klevel,:,:].std(axis=0)
-    plot = map.contourf(x2d, y2d, tstd, N.linspace(0.0,tpert,num=10), cmap=ctables.Not_PosDef_Default, ax=ax6)
-    cbar = map.colorbar(plot, ax=ax6)
-    map.plot(xbox, ybox, color='k', ax=ax6) 
-    cbar.set_label('Theta-Perts Stdev')
-    ax6.set_title('Theta-Perts Stdev', fontsize=20)
+    if upert > 0.0:
+        plot = map.contourf(x2d, y2d,ens['U'][me,klevel,:,:]-ens['U'][me,klevel,-1,-1], N.linspace(-upert, upert, num=10), ax=ax3)
+        cbar = map.colorbar(plot, ax=ax3)
+        map.plot(xbox, ybox, color='k', ax=ax3)   
+        cbar.set_label('U-PERTS')
+        ax3.set_title('U-PERTS', fontsize=20)
 
-    tstd = 1000.*ens['QV'][:,klevel,:,:].std(axis=0)
-    plot = map.contourf(x2d, y2d, tstd, N.linspace(0.0,tdpert,num=20), cmap=ctables.Not_PosDef_Default, ax=ax7)
-    cbar = map.colorbar(plot, ax=ax7)
-    map.plot(xbox, ybox, color='k', ax=ax7) 
-    cbar.set_label('QV-Perts Stdev')
-    ax7.set_title('QV-Perts Stdev', fontsize=20)
+        # plot std-dev
 
-    tstd = ens['U'][:,klevel,:,:].std(axis=0)
-    plot = map.contourf(x2d, y2d, tstd, N.linspace(0.0,vpert,num=10), cmap=ctables.Not_PosDef_Default, ax=ax8)
-    cbar = map.colorbar(plot, ax=ax8)
-    map.plot(xbox, ybox, color='k', ax=ax8) 
-    cbar.set_label('U-Perts Stdev')
-    ax8.set_title('U-Perts Stdev', fontsize=20)
+        tstd = ens['U'][:,klevel,:,:].std(axis=0)
+        plot = map.contourf(x2d, y2d, tstd, N.linspace(0.0,vpert,num=10), cmap=ctables.Not_PosDef_Default, ax=ax8)
+        cbar = map.colorbar(plot, ax=ax8)
+        map.plot(xbox, ybox, color='k', ax=ax8) 
+        cbar.set_label('U-Perts Stdev')
+        ax8.set_title('U-Perts Stdev', fontsize=20)
 
-    tstd = ens['V'][:,klevel,:,:].std(axis=0)
-    plot = map.contourf(x2d, y2d, tstd, N.linspace(0.0,vpert,num=10), cmap=ctables.Not_PosDef_Default, ax=ax9)
-    cbar = map.colorbar(plot, ax=ax9)
-    map.plot(xbox, ybox, color='k', ax=ax9) 
-    cbar.set_label('V-Perts Stdev')
-    ax9.set_title('V-Perts Stdev', fontsize=20)
+    if vpert > 0.0:
+        plot = map.contourf(x2d, y2d,ens['V'][me,klevel,:,:]-ens['V'][me,klevel,-1,-1], N.linspace(-vpert, vpert, num=10), ax=ax4)
+        cbar = map.colorbar(plot, ax=ax4)
+        map.plot(xbox, ybox, color='k', ax=ax4) 
+        cbar.set_label('V-PERTS')
+        ax4.set_title('V-PERTS', fontsize=20)
+     
+        # plot std-dev
 
-    tstd = ens['W'][:,klevel,:,:].std(axis=0)
-    plot = map.contourf(x2d, y2d, tstd, N.linspace(0.0,wpert,num=10), cmap=ctables.Not_PosDef_Default, ax=ax10)
-    cbar = map.colorbar(plot, ax=ax10)
-    map.plot(xbox, ybox, color='k', ax=ax10) 
-    cbar.set_label('W-Perts Stdev')
-    ax10.set_title('W-Perts Stdev', fontsize=20)
+        tstd = ens['V'][:,klevel,:,:].std(axis=0)
+        plot = map.contourf(x2d, y2d, tstd, N.linspace(0.0,vpert,num=10), cmap=ctables.Not_PosDef_Default, ax=ax9)
+        cbar = map.colorbar(plot, ax=ax9)
+        map.plot(xbox, ybox, color='k', ax=ax9) 
+        cbar.set_label('V-Perts Stdev')
+        ax9.set_title('V-Perts Stdev', fontsize=20)
+
+    if wpert > 0.0:
+        plot = map.contourf(x2d, y2d,ens['W'][me,klevel,:,:]-ens['W'][me,klevel,-1,-1], N.linspace(0.0, wpert, num=10), ax=ax5)
+        cbar = map.colorbar(plot, ax=ax5)
+        map.plot(xbox, ybox, color='k', ax=ax5) 
+        cbar.set_label('W-PERTS')
+        ax5.set_title('W-PERTS', fontsize=20)
+
+        # plot std-dev
+
+        tstd = ens['W'][:,klevel,:,:].std(axis=0)
+        plot = map.contourf(x2d, y2d, tstd, N.linspace(0.0,wpert,num=10), cmap=ctables.Not_PosDef_Default, ax=ax10)
+        cbar = map.colorbar(plot, ax=ax10)
+        map.plot(xbox, ybox, color='k', ax=ax10) 
+        cbar.set_label('W-Perts Stdev')
+        ax10.set_title('W-Perts Stdev', fontsize=20)
 
     P.savefig("IC3D.pdf",dpi=300)
 
@@ -1893,7 +1914,7 @@ def ens_CM1_mean(ens):
     
     if key == "W":  fstate.w[ens.ne,:,:,:] = N.mean(fstate.w[0:ens.ne,:,:,:],0)
     
-  if time_all:  print "\n Wallclock time to create ensemble means:", round(timer() - t0, 3), " sec"
+  if time_all:  print("\n Wallclock time to create ensemble means:", round(timer() - t0, 3), " sec")
 
   return
 
@@ -2101,6 +2122,8 @@ def read_CM1_ens(files, experiment, state_vector=None, DateTime=None, time_index
 
   f.close()
 
+  del(f)
+
   t1 = timer()
 
   for n, fi in enumerate(files[0:ens.ne]):
@@ -2112,6 +2135,7 @@ def read_CM1_ens(files, experiment, state_vector=None, DateTime=None, time_index
     for m, key in enumerate(ens.state_vector['xyz3d']): 
 
       hkey = ens.state_vector[key]['name']
+
       if debug_io:  print("\n READ_CM1_ENS:  Reading xyz3d array: %s into variable: %d and ensemble member: %d " % (key, m, n))
 
       if key == "U":    # Special processing for staggerd variables
@@ -2119,7 +2143,7 @@ def read_CM1_ens(files, experiment, state_vector=None, DateTime=None, time_index
           fstate.u[n,:,:,:] = f[hkey][:]
           ens.u_ptr = m
         except KeyError:       
-          print ("\n READ_CM1_ENS ==> WARNING:  netCDF file: %s DOES NOT contain variable: %s, skipping it\n" % (fi, key))
+          print("\n READ_CM1_ENS ==> WARNING:  netCDF file: %s DOES NOT contain variable: %s, skipping it\n" % (fi, key))
           break
         except IndexError:       
           print("\n READ_CM1_ENS ==> WARNING:  netCDF file: %s DOES NOT contain time index: %d \n" % (fi, time_index))
@@ -2235,6 +2259,7 @@ def write_CM1_ens(ens, writeEns=False, overwrite=False, writeFcstMean=False, wri
   f = ncdf.Dataset(ens.files[0], "r")
   time = f.variables['time'][:]
   f.close()
+  del(f)
 
   if writeEns == True:
   
@@ -2299,7 +2324,9 @@ def write_CM1_ens(ens, writeEns=False, overwrite=False, writeFcstMean=False, wri
           if debug_io:
             print("\n ==> WRITE_CM1_ENS:  Did not writeback variable %s to netCDF file" % key)
           
+      f.sync()
       f.close()
+      del(f)
 
       if debug_io:
         print("\n ==> WRITE_CM1_ENS:  Closed file %s" % files[n])
@@ -2337,7 +2364,7 @@ def write_CM1_ens(ens, writeEns=False, overwrite=False, writeFcstMean=False, wri
 
     for key in ens.state_vector["xyz3d"]: 
       
-      if f.variables.has_key(key):
+      if key in f.variables:
 
         if key == "U":        
           f[ens.state_vector[key]['name']][:,:,:] = fstate.u[ens.ne,:,:,:]
@@ -2398,36 +2425,36 @@ def ens_check(files,ens):
 
   for key in ["U", "V", "W", "TH"]:
 
-    ne2 = max(ens.ne/2, 1)
-    print("\n     Checking %s for ensemble member %d" % (key, ne2))
-    print("------------------------------------------------")
+    for ne2 in [1,3,7]:
+        print("\n     Checking %s for ensemble member %d" % (key, ne2))
+        print("------------------------------------------------")
 
-    f = ncdf.Dataset(files[ne2], "r")
-    d = f.variables[ens.state_vector[key]['name']][ens['time_index']]
+        f = ncdf.Dataset(files[ne2], "r")
+        d = f.variables[ens.state_vector[key]['name']][ens['time_index']]
    
-    if key == "U":
-      print("\nENS  Variable: %s  Max:   %10.4f  Min:   %10.4f" % (key, fstate.u[ne2].max(), fstate.u[ne2].min()))      
-      print("\nFile Variable: %s  Max:   %10.4f  Min:   %10.4f" % (key, d.max(), d.min()))      
-      print("\nENS  Variable: %s  Mean:  %10.4f  Stdev:  %10.4f" % (key, fstate.u[ne2].mean(), fstate.u[ne2].std()))      
-      print("\nFile Variable: %s  Mean:  %10.4f  Stdev:  %10.4f" % (key, d.mean(), d.std()))
+        if key == "U":
+          print("\nENS  Variable: %s  Max:   %10.4f  Min:   %10.4f" % (key, fstate.u[ne2].max(), fstate.u[ne2].min()))      
+          print("\nFile Variable: %s  Max:   %10.4f  Min:   %10.4f" % (key, d.max(), d.min()))      
+          print("\nENS  Variable: %s  Mean:  %10.4f  Stdev:  %10.4f" % (key, fstate.u[ne2].mean(), fstate.u[ne2].std()))      
+          print("\nFile Variable: %s  Mean:  %10.4f  Stdev:  %10.4f" % (key, d.mean(), d.std()))
     
-    elif key == "V":      
-      print("\nENS  Variable: %s  Max:   %10.4f  Min:   %10.4f" % (key, fstate.v[ne2].max(), fstate.v[ne2].min()))      
-      print("\nFile Variable: %s  Max:   %10.4f  Min:   %10.4f" % (key, d.max(), d.min()))      
-      print("\nENS  Variable: %s  Mean:  %10.4f  Stdev:  %10.4f" % (key, fstate.v[ne2].mean(), fstate.v[ne2].std()))      
-      print("\nFile Variable: %s  Mean:  %10.4f  Stdev:  %10.4f" % (key, d.mean(), d.std()))
+        elif key == "V":      
+          print("\nENS  Variable: %s  Max:   %10.4f  Min:   %10.4f" % (key, fstate.v[ne2].max(), fstate.v[ne2].min()))      
+          print("\nFile Variable: %s  Max:   %10.4f  Min:   %10.4f" % (key, d.max(), d.min()))      
+          print("\nENS  Variable: %s  Mean:  %10.4f  Stdev:  %10.4f" % (key, fstate.v[ne2].mean(), fstate.v[ne2].std()))      
+          print("\nFile Variable: %s  Mean:  %10.4f  Stdev:  %10.4f" % (key, d.mean(), d.std()))
   
-    elif key == "W":      
-      print("\nENS  Variable: %s  Max:   %10.4f  Min:   %10.4f" % (key, fstate.w[ne2].max(), fstate.w[ne2].min()))      
-      print("\nFile Variable: %s  Max:   %10.4f  Min:   %10.4f" % (key, d.max(), d.min()))      
-      print("\nENS  Variable: %s  Mean:  %10.4f  Stdev:  %10.4f" % (key, fstate.w[ne2].mean(), fstate.w[ne2].std()))      
-      print("\nFile Variable: %s  Mean:  %10.4f  Stdev:  %10.4f" % (key, d.mean(), d.std()))
+        elif key == "W":      
+          print("\nENS  Variable: %s  Max:   %10.4f  Min:   %10.4f" % (key, fstate.w[ne2].max(), fstate.w[ne2].min()))      
+          print("\nFile Variable: %s  Max:   %10.4f  Min:   %10.4f" % (key, d.max(), d.min()))      
+          print("\nENS  Variable: %s  Mean:  %10.4f  Stdev:  %10.4f" % (key, fstate.w[ne2].mean(), fstate.w[ne2].std()))      
+          print("\nFile Variable: %s  Mean:  %10.4f  Stdev:  %10.4f" % (key, d.mean(), d.std()))
     
-    else: 
-      print("\nENS  Variable: %s  Max:   %10.4f  Min:   %10.4f" % (key, ens[key][ne2].max(), ens[key][ne2].min()))     
-      print("\nFile Variable: %s  Max:   %10.4f  Min:   %10.4f" % (key, d.max(), d.min()))     
-      print("\nENS  Variable: %s  Mean:  %10.4f  Stdev:  %10.4f" % (key, ens[key][ne2].mean(), ens[key][ne2].std()))     
-      print("\nFile Variable: %s  Mean:  %10.4f  Stdev:  %10.4f" % (key, d.mean(), d.std()))
+        else: 
+          print("\nENS  Variable: %s  Max:   %10.4f  Min:   %10.4f" % (key, ens[key][ne2].max(), ens[key][ne2].min()))     
+          print("\nFile Variable: %s  Max:   %10.4f  Min:   %10.4f" % (key, d.max(), d.min()))     
+          print("\nENS  Variable: %s  Mean:  %10.4f  Stdev:  %10.4f" % (key, ens[key][ne2].mean(), ens[key][ne2].std()))     
+          print("\nFile Variable: %s  Mean:  %10.4f  Stdev:  %10.4f" % (key, d.mean(), d.std()))
 
     f.close()
 
@@ -2566,8 +2593,8 @@ if __name__ == "__main__":
 #  You now have a data structure that if fully populated with information
 
     if options.init0:
-        ens_IC_pertUV(state, writeout=True)
-        ens_IC_pert_from_box(state, plot=options.plot, writeout=True)
+        ens_IC_pertUV(state, writeout=False)
+        ens_IC_pert_from_box(state, plot=options.plot, writeout=False)
         
     if options.init1 > 0:
         ens_INIT0(state, options)

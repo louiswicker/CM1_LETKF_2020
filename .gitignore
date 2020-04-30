@@ -1,0 +1,7 @@
+*.o
+*.so*
+*.mod
+*.pyc 
+*.nc
+*.pdf
+RUN_LETKF*

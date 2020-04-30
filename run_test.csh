@@ -1,7 +1,7 @@
 #!/bin/csh
 echo "Starting runit.csh"
 
-set dir = "test2kmB"
+set dir = "test2kmC"
 
 echo "running job "$dir
 

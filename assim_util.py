@@ -31,17 +31,17 @@ class myTimer():
     self.total = self.total + timer() - self.last
 
   def printit(self,string=None):
-    print "\n  ---------------------------------------\n"
+    print("\n  ---------------------------------------\n")
     if string == None: string = ""
     total = self.total
     if self.minutes:  
       total = round(total/60., 3) 
-      print "  %s ... Time in minutes for %s: %f" % (string, self.name, total)
+      print("  %s ... Time in minutes for %s: %f" % (string, self.name, total))
     else:
       total = round(total, 3) 
-      print "  %s ... Time in seconds for %s: %f " % (string, self.name, total)
+      print("  %s ... Time in seconds for %s: %f " % (string, self.name, total))
 
-    print "\n  ---------------------------------------\n"
+    print("\n  ---------------------------------------\n")
 
 
 # ==================================================================================================================================
@@ -58,8 +58,8 @@ def print_state_diagnostics(mdata, store=False, header=False):
   global uavg, vavg, wavg, tavg, davg, qavg    # use global storage so that we can simply store this stuff inside
 
   if header:
-    print "          Z |           UA                    VA                  WA                  TH                  DBZ                QR"
-    print "                    mean  std             mean  std           mean  std           mean  std           mean   std         mean  std\n"
+    print("          Z |           UA                    VA                  WA                  TH                  DBZ                QR",end="\n")
+    print("                    mean  std             mean  std           mean  std           mean  std           mean   std         mean  std",end="\n")
 
   if store:
     uavg = N.zeros((100,2))
@@ -79,18 +79,18 @@ def print_state_diagnostics(mdata, store=False, header=False):
     return
         
   for zi in N.arange(mdata.nz):
-    print " Prior       |  %8.5f  %8.5f  %10.5f  %8.5f  %8.5f  %8.5f  %8.5f  %8.5f  %8.5f  %8.5f  %8.5f  %8.5f" % \
+    print(" Prior       |  %8.5f  %8.5f  %10.5f  %8.5f  %8.5f  %8.5f  %8.5f  %8.5f  %8.5f  %8.5f  %8.5f  %8.5f" % \
         (uavg[zi,0], uavg[zi,1], vavg[zi,0], vavg[zi,1],  wavg[zi,0], wavg[zi,1], tavg[zi,0], tavg[zi,1], \
-         davg[zi,0], davg[zi,1], 1000.*qavg[zi,0], 1000.*qavg[zi,1])
+         davg[zi,0], davg[zi,1], 1000.*qavg[zi,0], 1000.*qavg[zi,1]))
 
-    print " %12.2f|  %8.5f  %8.5f  %10.5f  %8.5f  %8.5f  %8.5f  %8.5f  %8.5f  %8.5f  %8.5f  %8.5f  %8.5f \n" % \
+    print(" %12.2f|  %8.5f  %8.5f  %10.5f  %8.5f  %8.5f  %8.5f  %8.5f  %8.5f  %8.5f  %8.5f  %8.5f  %8.5f \n" % \
                          (mdata.zc.data[zi],   \
                          N.average(mdata["UA"].data[:-1,zi,:,:]),  N.std(mdata["UA"].data[:-1,zi,:,:]), \
                          N.average(mdata["VA"].data[:-1,zi,:,:]),  N.std(mdata["VA"].data[:-1,zi,:,:]), \
                          N.average(mdata["WA"].data[:-1,zi,:,:]),  N.std(mdata["WA"].data[:-1,zi,:,:]), \
                          N.average(mdata["TH"].data[:-1,zi,:,:]),  N.std(mdata["TH"].data[:-1,zi,:,:]), \
                          N.average(mdata["DBZ"].data[:-1,zi,:,:]),N.std(mdata["DBZ"].data[:-1,zi,:,:]),
-                   1000.*N.average(mdata["QR"].data[:-1,zi,:,:]), 1000.*N.std(mdata["QR"].data[:-1,zi,:,:]))
+                   1000.*N.average(mdata["QR"].data[:-1,zi,:,:]), 1000.*N.std(mdata["QR"].data[:-1,zi,:,:])))
 
 #####################################################################################################
 def rename_weight_file(DT):
@@ -110,7 +110,7 @@ def write_inflation_file(array, xc, yc, zc, DT, path = "./"):
 
   filename = os.path.join(path, "%s_%s%s" % ("Inflation", DT.strftime("%Y-%m-%d_%H:%M:%S"), ".nc" ))
 
-  print "\n -->  Writing %s as the adaptive inflation file..." % (filename)
+  print("\n -->  Writing %s as the adaptive inflation file..." % (filename))
     
   rootgroup = ncdf.Dataset(filename, 'w', format='NETCDF4')
       
@@ -167,8 +167,8 @@ def read_inflation_file(DT=None, file=None):
   elif DT != None:
     filename = "%s_%s%s" % ("Inflation", DT.strftime("%Y-%m-%d_%H:%M:%S"), ".nc" )
   else:
-    print "Read_inflation_file:  MUST SPECIFY FILENAME OR DateTIME object"
-    print "====>Exiting!!!"
+    print("Read_inflation_file:  MUST SPECIFY FILENAME OR DateTIME object")
+    print("====>Exiting!!!")
     return -1
     
   rootgroup = ncdf.Dataset(filename, 'r', format='NETCDF4')
@@ -214,7 +214,7 @@ def write_ob_table():
 if __name__ == "__main__":
 
   
-  print "Testing I/O of inflation array"
+  print("Testing I/O of inflation array")
   
   dt1= DT.datetime(2003,5,8,22,1,2)
 
@@ -227,7 +227,7 @@ if __name__ == "__main__":
   inflate2 = read_inflation_file(DT=dt1)
 
   if N.any(inflate1-inflate2 != 0.0):
-    print "====> problem!, inflation arrays do not match!!"
+    print("====> problem!, inflation arrays do not match!!")
   else:
-    print "====> good to go as the inflation arrays match!!"
+    print("====> good to go as the inflation arrays match!!")
 

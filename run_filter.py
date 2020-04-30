@@ -56,7 +56,6 @@ if __name__ == "__main__":
     sys.exit(-1)
   else:
     with open(options.exper, 'rb') as p:
-        #        exper = pickle.load(p)
         exper = json.load(p)
 
 # get path for file creation and location
@@ -150,9 +149,7 @@ if __name__ == "__main__":
   
     dt      = DT.timedelta(seconds=N.int(sec))
     Hx_time = DT.datetime(int(time[0]),int(time[1]),int(time[2]),int(time[3]),int(time[4]),int(time[5])) + dt
-    print("TESTE")
-    print(Hx_time)
-    print(("\n  -->  Run_Filter calling computeHx for time %s  \n" % Hx_time.strftime("%Y,%m,%d,%H,%M,%S")))
+    print("\n  -->  Run_Filter calling computeHx for time %s  \n" % Hx_time.strftime("%Y,%m,%d,%H,%M,%S"))
 
     cmd = "computeHx.py --exper %s --time %s -o %s --window %d" % (options.exper, Hx_time.strftime("%Y,%m,%d,%H,%M,%S"), obs_file, freq)
                                
@@ -161,9 +158,10 @@ if __name__ == "__main__":
     if options.obserr:  cmd = "%s --obserr %s %s %s %s" % (cmd, \
                         options.obserr[0],options.obserr[1],options.obserr[2],options.obserr[3])
        
-    print(("\n  "+cmd+"\n"))
+    print("\n  "+cmd+"\n")
 
-    print((run_unix_cmd(cmd)))
+    #print(run_unix_cmd(cmd))
+    os.system(cmd)
 
   file_DT = DT.datetime(int(time[0]),int(time[1]),int(time[2]),int(time[3]),int(time[4]),int(time[5]))
 
@@ -171,7 +169,7 @@ if __name__ == "__main__":
 
   os.rename("Prior.nc", newPriorFile)
   
-  print(("\n  --> Moved Prior.nc file to %s\n" % (newPriorFile)))
+  print("\n  --> Moved Prior.nc file to %s\n" % (newPriorFile))
 
 #################################################################################################
 # Run LETKF 
@@ -184,8 +182,9 @@ if __name__ == "__main__":
   if aInflate:   cmd = "%s --aInflate %d" % (cmd, aInflate)
   if options.HF != None: cmd = "%s --HF %d" % (cmd, options.HF)
   
-  print(("\n  "+cmd+"\n"))
-  print((run_unix_cmd(cmd)))
+  print("\n  "+cmd+"\n")
+  os.system(cmd)
+  #print(run_unix_cmd(cmd))
 
   print("\n  ----------------------------------------------------------------------")
   print("\n                 END PROGRAM RUN_FILTER                                 ")
