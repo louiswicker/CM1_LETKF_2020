@@ -1,25 +1,32 @@
 #!/bin/csh
-echo "Starting runit.csh"
+echo "Starting run_test.csh"
 
-set dir = "test2kmC"
+set dir = "test"
 
 echo "running job "$dir
 
 date
 
-run_exper.py -d RUN_LETKF -i >& out_$dir
-mv RUN_LETKF $dir
+create_run_letkf.py
+run_fcst.py -e RUN_LETKF/RUN_LETKF.exp -i
+ens.py -e RUN_LETKF/RUN_LETKF.exp --init0 -t 2003,5,8,20,40,0 --write
+
+# run job script
+
+run_job.csh >& out_$dir
+
+cp -R RUN_LETKF $dir
 
 date
 
 ens.py -d $dir -t 2003,5,8,21,0,0 -v W --plot9 #--zoom 80 160 80 160
-ens.py -d $dir -t 2003,5,8,21,20,0 -v W --plot9 #--zoom 80 160 80 160
-ens.py -d $dir -t 2003,5,8,21,40,0 -v W --plot9 #--zoom 80 160 80 160
+ens.py -d $dir -t 2003,5,8,21,15,0 -v W --plot9 #--zoom 80 160 80 160
+ens.py -d $dir -t 2003,5,8,21,30,0 -v W --plot9 #--zoom 80 160 80 160
 ens.py -d $dir -t 2003,5,8,22,0,0 -v W --plot9 #--zoom 80 160 80 160
 #
 ens.py -d $dir -t 2003,5,8,21,0,0 -v DBZ --plot8
-ens.py -d $dir -t 2003,5,8,21,20,0 -v DBZ --plot8 
-ens.py -d $dir -t 2003,5,8,21,40,0 -v DBZ --plot8 # --zoom 80 160 80 160
+ens.py -d $dir -t 2003,5,8,21,15,0 -v DBZ --plot8 
+ens.py -d $dir -t 2003,5,8,21,30,0 -v DBZ --plot8 # --zoom 80 160 80 160
 ens.py -d $dir -t 2003,5,8,22,0,0 -v DBZ --plot8 #--zoom 80 160 80 160
 
 #vort_prob_CM1.py -d $dir -t 2011,5,24,20,35,0 --fcst 3000 60 --noshow
