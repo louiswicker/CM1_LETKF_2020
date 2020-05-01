@@ -131,6 +131,7 @@ def FindRestartFiles(exper_filename, myDT, ret_exp=True, ret_DT=True):
 
     fileheader = os.path.join(exper['fcst_members'][0],fprefix)
     files = glob.glob(fileheader+"_rst_0*.nc")
+    files = sorted(files,key=os.path.getmtime)
 
     if len(files) > 0:
 
@@ -363,8 +364,8 @@ def mymap(x, y, glat, glon, scale = 1.0, ax = None, noticks = False, resolution=
                    suppress_ticks=noticks, \
                    ax=ax)
 
-    if counties:
-        bmap.drawcounties(ax=ax)
+#   if counties:
+#       bmap.drawcounties(ax=ax)
 
 # Shape file stuff
 
@@ -931,7 +932,7 @@ def ens_PLOT_9PANEL(ens, klevel = 6, obs=False, savefig=None, cparams = None, va
   for n, ax in enumerate(ax_grid.ravel()):
     
     if n == 4 and obs:
-      mfld = N.ma.masked_less_equal(f3d[20,:,:], 0.0)
+      mfld = N.ma.masked_less_equal(f3d[5,:,:], 0.0)
       label = "OBSERVED DBZ"
       PLOT_ONE(mfld, x2d, y2d, map, clevels=clevels, height=ens.zc[klevel], label = label, ax = ax, \
                counties=True, cmap=ctables.REF_default, zoom = zoom, **kwargs)
@@ -1230,18 +1231,19 @@ def ens_GRID_RELECTIVITY(ens, ob_file=None, plot=False, composite=True):
           (0.001*fstate.yc.min(), 0.001*yob.min(),  0.001*yob.max(), 0.001*fstate.yc.max()))
   print("Z-GRID MIN: %4.1f  Z-OB MIN:  %4.1f  Z-OB MAX:  %4.1f  Z-GRID MAX:  %4.1f" % \
           (0.001*fstate.zc.min(), 0.001*hgts.min(),  0.001*hgts.max(), 0.001*fstate.zc.max()))
-  
-# Create obs list for KDTree query...
 
-  xyz_obs  = N.vstack(([2000.], [yoffset+0.5*fstate.yc.max()], [xoffset+0.5*fstate.xc.max()]))
-  obs_list = list(xyz_obs.transpose())
-# obs_list = [2000., 0.5*fstate.yc.max(), 0.5*fstate.xc.max()]
-# print(obs_list)
-# data[0] = 50.
-# data[1:] = 0.0
+# Create obs list for KDTree query...
 
   xyz_obs  = N.vstack((hgts,yob,xob))
   obs_list = list(xyz_obs.transpose())
+
+# If needed, here is some fake data for testing code
+
+# xob, yob, hgts = [xoffset+0.5*(fstate.xc.max()-fstate.xc.min())], [yoffset+0.5*(fstate.yc.max()-fstate.yc.min())], [2000.]
+# xyz_obs  = N.vstack((hgts,yob,xob))
+# obs_list = list(xyz_obs.transpose())
+# data = 50.*N.ones((1,))   # single point of 50 dbz
+# print(data, obs_list)
 
 # Create 3D grid arrays for KDTree
   
@@ -1251,24 +1253,21 @@ def ens_GRID_RELECTIVITY(ens, ob_file=None, plot=False, composite=True):
 # Use cKDTree to create fast indexing for 3D grid....
 
   mytree = scipy.spatial.cKDTree(xyz_grid)
-
   distance, indices1D = mytree.query(obs_list)
-
-# indices3D = N.unravel_index(N.ravel_multi_index(indices1D, y_array.size), y_array.shape)
 
 # these are the integer indices that you now pass into the fortran routine. They
 # are the un-raveled 3D index locations nearest the observation point in the 3D array
 
   kk,jj,ii = N.unravel_index(indices1D, (len(fstate.zc), len(fstate.yc), len(fstate.xc)))
 
-  for n in N.arange(10):
+  for n in N.arange(data.size):
       print("obs#: %d  Zobs:  %8.1f  Zarray:  %8.1f" % (n, xyz_obs[0,n], z_array[kk[n],jj[n],ii[n]]))
       print("obs#: %d  Yobs:  %8.1f  Yarray:  %8.1f" % (n, xyz_obs[1,n], y_array[kk[n],jj[n],ii[n]]))
       print("obs#: %d  Xobs:  %8.1f  Xarray:  %8.1f\n" % (n, xyz_obs[2,n], x_array[kk[n],jj[n],ii[n]]))
     
 # Call the fortran routine that grids the dbz data
 
-  dbz3d = obs_2_grid3d(data, xob, yob, hgts, x_array, y_array, z_array, ii, jj, kk, 4000., 2000., 0.0)
+  dbz3d = obs_2_grid3d(data, xob, yob, hgts, x_array, y_array, z_array, ii, jj, kk, 8000., 4000., 0.0)
 
   print("\n ==> ens_GRID_REFL: 3D gridded DBZ:   Max:  %4.1f   Min:  %4.1f" % (dbz3d.max(), dbz3d.min()))
 
