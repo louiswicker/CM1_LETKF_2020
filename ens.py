@@ -810,6 +810,8 @@ def PLOT_ONE(mfld, x2d, y2d, map, cint=None, height=0., label = None, ax=None, c
   else:
     zoom = None
 
+  print(x2d.shape, mfld.shape)
+
   clvls = myclevels[ myclevels != 0.0 ] 
     
   plot = map.contourf(x2d, y2d, mfld, myclevels, ax = ax, cmap=cmap)
@@ -929,7 +931,7 @@ def ens_PLOT_9PANEL(ens, klevel = 6, obs=False, savefig=None, cparams = None, va
   for n, ax in enumerate(ax_grid.ravel()):
     
     if n == 4 and obs:
-      mfld = N.ma.masked_less_equal(f3d[klevel,:,:], 10.)
+      mfld = N.ma.masked_less_equal(f3d[20,:,:], 0.0)
       label = "OBSERVED DBZ"
       PLOT_ONE(mfld, x2d, y2d, map, clevels=clevels, height=ens.zc[klevel], label = label, ax = ax, \
                counties=True, cmap=ctables.REF_default, zoom = zoom, **kwargs)
@@ -1181,7 +1183,7 @@ def ens_GRID_RELECTIVITY(ens, ob_file=None, plot=False, composite=True):
   print("\n ==> ens_GRID_REFL: Using pyDart to search with begin time of: ", begin.strftime("%Y-%m-%d %H:%M:%S"))
   print("\n ==> ens_GRID_REFL: Using pyDart to search with end   time of: ", ending.strftime("%Y-%m-%d %H:%M:%S"))
  
-  ob_f.search(start=begin.timetuple()[:6], end=ending.timetuple()[:6], condition = '(kind == 12) & (value > 15.) & (z < 10000.)')
+  ob_f.search(start=begin.timetuple()[:6], end=ending.timetuple()[:6], condition = '(kind == 12) & (value > 0.) & (z < 10000.)')
 
 # number of observations, if there are none, stop program, something is wrong
 
@@ -1205,7 +1207,7 @@ def ens_GRID_RELECTIVITY(ens, ob_file=None, plot=False, composite=True):
 # The coordinate system here is based on the grid lat0/lon0/hgt0, and the offset grid stored in fstate
 #     ens stores the x/y grid in grid-internal coordinates
 
-  map = mymap(fstate.xc, fstate.yc, glat, glon)
+  map      = mymap(fstate.xc, fstate.yc, glat, glon)
   xob, yob = map(lons, lats)
   xob, yob = xob+xoffset, yob+yoffset
 
@@ -1231,9 +1233,16 @@ def ens_GRID_RELECTIVITY(ens, ob_file=None, plot=False, composite=True):
   
 # Create obs list for KDTree query...
 
+  xyz_obs  = N.vstack(([2000.], [yoffset+0.5*fstate.yc.max()], [xoffset+0.5*fstate.xc.max()]))
+  obs_list = list(xyz_obs.transpose())
+# obs_list = [2000., 0.5*fstate.yc.max(), 0.5*fstate.xc.max()]
+# print(obs_list)
+# data[0] = 50.
+# data[1:] = 0.0
+
   xyz_obs  = N.vstack((hgts,yob,xob))
   obs_list = list(xyz_obs.transpose())
-  
+
 # Create 3D grid arrays for KDTree
   
   y_array, z_array, x_array = N.meshgrid(fstate.yc, fstate.zc, fstate.xc)
@@ -1245,24 +1254,22 @@ def ens_GRID_RELECTIVITY(ens, ob_file=None, plot=False, composite=True):
 
   distance, indices1D = mytree.query(obs_list)
 
-  indices3D = N.unravel_index(N.ravel(indices1D, y_array.size), y_array.shape)
+# indices3D = N.unravel_index(N.ravel_multi_index(indices1D, y_array.size), y_array.shape)
 
 # these are the integer indices that you now pass into the fortran routine. They
 # are the un-raveled 3D index locations nearest the observation point in the 3D array
 
-  kk = indices3D[0]
-  jj = indices3D[1]
-  ii = indices3D[2]
+  kk,jj,ii = N.unravel_index(indices1D, (len(fstate.zc), len(fstate.yc), len(fstate.xc)))
 
-#   for n in N.arange(data.size) :
-#     print(n, xyz_obs[0,n], xyz_obs[1,n], xyz_obs[2,n], z_array[kk[n],jj[n],ii[n]], y_array[kk[n],jj[n],ii[n]], x_array[kk[n],jj[n],ii[n]])
-#     print
-# 
-#   
+  for n in N.arange(10):
+      print("obs#: %d  Zobs:  %8.1f  Zarray:  %8.1f" % (n, xyz_obs[0,n], z_array[kk[n],jj[n],ii[n]]))
+      print("obs#: %d  Yobs:  %8.1f  Yarray:  %8.1f" % (n, xyz_obs[1,n], y_array[kk[n],jj[n],ii[n]]))
+      print("obs#: %d  Xobs:  %8.1f  Xarray:  %8.1f\n" % (n, xyz_obs[2,n], x_array[kk[n],jj[n],ii[n]]))
+    
 # Call the fortran routine that grids the dbz data
 
   dbz3d = obs_2_grid3d(data, xob, yob, hgts, x_array, y_array, z_array, ii, jj, kk, 4000., 2000., 0.0)
-  
+
   print("\n ==> ens_GRID_REFL: 3D gridded DBZ:   Max:  %4.1f   Min:  %4.1f" % (dbz3d.max(), dbz3d.min()))
 
 # Create composite reflectivity, and then replicate it into a 3D array
@@ -1278,7 +1285,7 @@ def ens_GRID_RELECTIVITY(ens, ob_file=None, plot=False, composite=True):
       
     print("\n ==> ens_GRID_REFL: 2D composite DBZ requested   Max:  %4.1f   Min:  %4.1f" % (dbz2d.max(), dbz2d.min()))
    
-  del xyz_obs, x_array, y_array, z_array, xyz_grid, mytree, indices3D, ii, jj, kk, dbz2d
+  del xyz_obs, x_array, y_array, z_array, xyz_grid, mytree
              
   return dbz3d
 
@@ -2054,6 +2061,8 @@ def read_CM1_ens(files, experiment, state_vector=None, DateTime=None, time_index
   ens.coards       = datetime.datetime(ens.year, ens.month, ens.day,ens.hour, ens.minute, ens.second)
 
   ens.time         = f.variables['time'][0]  # we need this here to create datetime array
+
+  print(ens.time)
  
 # create a list of datetime objects from the model time array
  
