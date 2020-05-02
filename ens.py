@@ -649,6 +649,20 @@ def plothodos(ens):
   hodoLabelHeights = [0.0, 1000., 2000., 4000., 6000., 8000., 10000.,12000.,15000.]
   hodoLabelOffset  = 1.25
 
+  m = ens.zc[:].searchsorted(8000.)
+
+  print("------------------------------------------------------------------------------")
+  print("\nEnsemble field mean and standard deviations for soundings")
+  print("------------------------------------------------------------------------------")
+  
+  for n in N.arange(ens.nz):
+      if ens.zc[n] < 8000.:
+          umean = N.mean(ens['U'][:,n,:,:])
+          vmean = N.mean(ens['V'][:,n,:,:])
+          ustd  = N.std(ens['U'][:,n,:,:])
+          vstd  = N.std(ens['V'][:,n,:,:])
+          print("Height:  %6.1f  U_mean: %4.1f  U_stddev:  %4.2f  Vmean:  %4.1f  V_stddev:  %4.2f" % (ens.zc[n], umean, ustd, vmean,vstd))
+
 # Create a new figure. The dimensions here give a good aspect ratio
 
   fig = P.figure(figsize=(6.5875, 6.2125))
@@ -656,16 +670,11 @@ def plothodos(ens):
 
   P.grid(True)
 
-  m = ens.zc[:].searchsorted(8000.)
-  
   for n in N.arange(ens.ne):
 
     u = (ens['U'][n,:m].mean(axis=2)).mean(axis=1)
     v = (ens['V'][n,:m].mean(axis=2)).mean(axis=1)
     
-    if n == 4:
-      print(u, v)
-
     ax.plot(u, v, color = 'r', alpha=0.4)
 
   l = ax.axvline(0.0, color='k')
@@ -1260,14 +1269,14 @@ def ens_GRID_RELECTIVITY(ens, ob_file=None, plot=False, composite=True):
 
   kk,jj,ii = N.unravel_index(indices1D, (len(fstate.zc), len(fstate.yc), len(fstate.xc)))
 
-  for n in N.arange(data.size):
-      print("obs#: %d  Zobs:  %8.1f  Zarray:  %8.1f" % (n, xyz_obs[0,n], z_array[kk[n],jj[n],ii[n]]))
-      print("obs#: %d  Yobs:  %8.1f  Yarray:  %8.1f" % (n, xyz_obs[1,n], y_array[kk[n],jj[n],ii[n]]))
-      print("obs#: %d  Xobs:  %8.1f  Xarray:  %8.1f\n" % (n, xyz_obs[2,n], x_array[kk[n],jj[n],ii[n]]))
+# for n in N.arange(data.size):
+#     print("obs#: %d  Zobs:  %8.1f  Zarray:  %8.1f" % (n, xyz_obs[0,n], z_array[kk[n],jj[n],ii[n]]))
+#     print("obs#: %d  Yobs:  %8.1f  Yarray:  %8.1f" % (n, xyz_obs[1,n], y_array[kk[n],jj[n],ii[n]]))
+#     print("obs#: %d  Xobs:  %8.1f  Xarray:  %8.1f\n" % (n, xyz_obs[2,n], x_array[kk[n],jj[n],ii[n]]))
     
 # Call the fortran routine that grids the dbz data
 
-  dbz3d = obs_2_grid3d(data, xob, yob, hgts, x_array, y_array, z_array, ii, jj, kk, 8000., 4000., 0.0)
+  dbz3d = obs_2_grid3d(data, xob, yob, hgts, x_array, y_array, z_array, ii, jj, kk, 4000., 2000., 0.0)
 
   print("\n ==> ens_GRID_REFL: 3D gridded DBZ:   Max:  %4.1f   Min:  %4.1f" % (dbz3d.max(), dbz3d.min()))
 

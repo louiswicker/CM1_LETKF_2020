@@ -2301,7 +2301,7 @@ END
 ! Routine to map raw dbz obs to model grid for additive noise calcs.  Implemention
 ! uses the cKDTree algorithm in python to find the indices for each ob that is on the grid.
 !
-! Example code in python to create fields that are needed.
+! Example code in python to test code
 !=======================================================================================================
 !# Begin python code
 !
@@ -2328,14 +2328,10 @@ END
 !
 !distances, indices1D = mytree.query(obs_list)
 !
-!indices3D = numpy.unravel_index(numpy.ravel(indices1D, y_array.size), y_array.shape)
-!
 !# these are the integer indices that you now pass into the fortran routine. They
 !# are the un-raveled 3D index locations nearest the observation point in the 3D array
 !
-!k = indices3D[0]
-!j = indices3D[1]
-!i = indices3D[2]
+!kk, jj, ii = N.unravel_index(indices1D, (len(z1d), len(y1d), len(x1d)))
 !
 !for n in numpy.arange(obs.shape[1]) :
 !    print n, obs[0,n], obs[1,n], obs[2,n], z_array[k[n],j[n],i[n]], y_array[k[n],j[n],i[n]], x_array[k[n],j[n],i[n]]
@@ -2372,7 +2368,7 @@ SUBROUTINE OBS_2_GRID3D(field, obs, xob, yob, zob, xc, yc, zc, ii, jj, kk, hscal
   real(kind=4), allocatable, dimension(:,:,:) :: sum, wgt_sum
 
 ! DEBUG
-  logical, parameter :: debug = .false.
+  logical, parameter :: debug = .true.
   
 ! Allocate local memory
 
@@ -2414,8 +2410,7 @@ SUBROUTINE OBS_2_GRID3D(field, obs, xob, yob, zob, xc, yc, zc, ii, jj, kk, hscal
     idx = 1+nint(hscale/abs(xc(k0,j0,i0) - xc(k0,j0,i0-1)))
     jdx = 1+nint(hscale/abs(yc(k0,j0,i0) - yc(k0,j0-1,i0)))
     
-    if( n .eq. 10 ) print *, idx, jdx
-    kdx = 3
+    kdx = 5
     
     i0m = max(i0-idx,1)
     j0m = max(j0-jdx,1)

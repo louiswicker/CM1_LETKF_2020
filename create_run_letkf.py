@@ -51,8 +51,8 @@ defaults = {
 
 # Initial 1D perturbations used in ens_IC_pertUV
 
-            "pscale":   1.0,
-            "rampS":    1.0,
+            "pscale":   2.0,
+            "rampS":    3.0,
             "rampZ":    10000.,
 
 # Initial 3D perturbations used in ens_IC_pert_from_box
@@ -61,8 +61,8 @@ defaults = {
 
             "IC_BOX": {
                        'nb':             3,
-                       'tpert':        1.0,
-                       'wpert':        0.5,
+                       'tpert':        2.0,
+                       'wpert':        1.0,
                        'tdpert':       0.0,
                        'upert':        0.0,
                        'vpert':        0.0,
@@ -111,7 +111,7 @@ defaults = {
                            "assim_freq":         300,       # type(int):  used to set asynchronous DA assimilation
                            "async_freq":         300,
                            "cook":              1200,       # type(int): time to pre-cook initial perturbations
-                           "additive_noise":    [True,2],   # type(list): whether to add noise based on 1=cref, 2 = adaptive-inflation field
+                           "additive_noise":    [True,1],   # type(list): whether to add noise based on 1=cref, 2 = adaptive-inflation field
                            "mpass":             False,
                            "writeFcstMean":     True,
                            "writeAnalMean":     True,
@@ -149,7 +149,7 @@ cm1_nml = {"cm1namelist": [
                            ('param1',  'dx', 2000.),
                            ('param1',  'dy', 2000.),
                            ('param1',  'dz', 400.),
-                           ('param1',  'dtl', 10.0),
+                           ('param1',  'dtl', 7.5),
                            ('param1',  'run_time', 0),
                            ('param1',  'rstfrq', 0.0),
                            ('param2',  'ptype', _microphysics_options[defaults['microphysics']]),

@@ -2,9 +2,8 @@
 # set a variable to tell plotting scripts how to use the files in this directory
 #
 # each set of shape files can have its own color, and linethickness.  
+
 import os
-import pltbook
-from cbook2 import *
 
 cwd = os.getcwd()
 

@@ -10,7 +10,7 @@ from optparse import OptionParser
 import datetime as DT
 from subprocess import *
 import json
-#-t 2003,5,8,20,40,0 --write
+
 #-----------------------------------------------------------------------------------------------------------------------------
 # Define initialization strings - not needed if you run them yourself
 
@@ -73,7 +73,7 @@ if options.init:
 ObFile   = ["Obs/obs_seq_PAR_4km_1min.h5"]      # HDF5 file for observations to be used for assimilation (not used currently)
 
 newstart = [False, 2003,5,8,20,40,0 ]
-stop     = [2003,5,8,22,0,0]
+stop     = [2003,5,8,21,30,0]
 
 fcst     = 900 
 

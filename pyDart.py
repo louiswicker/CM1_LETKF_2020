@@ -562,6 +562,8 @@ def ObType_LookUp(name,DART_name=False,Print_Table=False):
                  return Look_Up_Table[name2][0]
       else:
             print(("  ObType_LookUp cannot find variable:  ", name, name2))
+            print(("  ObType_LookUp cannot find variable:  ", type(name), type(name2)))
+            sys.exit(0)
             raise SystemExit
 
 #===============================================================================
@@ -1098,7 +1100,7 @@ class pyDART():
             if type(variable) == type(1):
                 var_index = variable
             
-            if lens(self.index) == 0:
+            if len(self.index) == 0:
                 table.get_where_list("kind == var_index")
             
             if len(self.index) != 0:

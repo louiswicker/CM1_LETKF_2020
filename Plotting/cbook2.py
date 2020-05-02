@@ -1,3 +1,4 @@
+
 from __future__ import division
 import numpy as N
 import datetime
@@ -29,9 +30,9 @@ def GetModelTime(file_obj, DateTime, index=False, closest=False):
         return 'Error Parsing COARDS'
 
     if debug:
-        print "\n COARDS:  ",coards
-        print "Input date and time:  ",DT,"\n"
-        print "Model date and time:  ",DateTimeArray,"\n"
+        print("\n COARDS:  ",coards)
+        print("Input date and time:  ",DT,"\n")
+        print("Model date and time:  ",DateTimeArray,"\n")
 
     time = int(round(netCDF4.date2num(DT, coards)))
 
@@ -165,7 +166,7 @@ def GetEnsembleFilenames(file_name, members, i=0, j=0):
         file_name += piece
         file_name += '.'
     file_name += '%03i.%s' % (members[i][j], tmp_name[-1])
-    print file_name
+    print(file_name)
     
     return file_name
 
@@ -208,10 +209,10 @@ def calcUH(w, vort, zc, ze, zbot, ztop):
     k1 = N.where(zc > zbot)[0][0] 
     k2 = N.where(zc > ztop)[0][0]
     
-    print "CalcUH:  nx,ny:  ", nx,ny
-    print "CalcUH:  Layer is:  ", ze[k1], ze[k2]
-    print "CalcUH:  Max/Min W:     ", w.max(), w.min()
-    print "CalcUH:  Max/Min VORT:  ", vort.max(), vort.min()
+    print("CalcUH:  nx,ny:  ", nx,ny)
+    print("CalcUH:  Layer is:  ", ze[k1], ze[k2])
+    print("CalcUH:  Max/Min W:     ", w.max(), w.min())
+    print("CalcUH:  Max/Min VORT:  ", vort.max(), vort.min())
 
     UH = -1.0 * N.ones((ny, nx))
 
@@ -228,7 +229,7 @@ def calcUH(w, vort, zc, ze, zbot, ztop):
 #           print k, w[k,index].shape
 #           UH[:,:] = UH[:,:] + .5*(w[k,index]+w[k+1,index]).reshape(ny,nx)*vort[k,index].reshape(ny,nx)
 
-    print "CalcUH:  Max value:  ", UH.max()
+    print("CalcUH:  Max value:  ", UH.max())
     return UH
 
 #===============================================================================
@@ -530,26 +531,26 @@ def dxy_2_dll(x, y, lat1, lon1, degrees=True, proj = 'latlon'):
 #===================================================================================================        
 if __name__ == "__main__":
     print
-    print "Testing nice_mxmnintvl code....."
-    print
-    print "Answers should look like this....."
-    print "(-20.0, 70.0, 9.0)"
-    print "-----OUTPUT---------"
-    print nice_mxmnintvl(-23.1, 70.7, outside=False, cint = 0.0)
-    print nice_mxmnintvl(-23.1, 70.7, outside=False)
-    print
-    print "Testing nice_clevels code....."
-    print
-    print "Answer should look like this....."
-    print "(-20.0, 70.0, 5.0, array([-20., -15., -10.,  -5.,   0.,   5.,  10.,  15.,  20.,  25.,  30."
-    print "        35.,  40.,  45.,  50.,  55.,  60.,  65.,  70.]))"
-    print
-    print "-Output-----------------------------------------------------------------------------------"
-    print nice_clevels(-23.1, 70.7, outside=False, cint=5.0)
-    print
-    print "Answer should look like this....."
-    print "(-25.0, 75.0, 5.0, array([-25., -20., -15., -10.,  -5.,   0.,   5.,  10.,  15.,  20.,  25."
-    print "        30.,  35.,  40.,  45.,  50.,  55.,  60.,  65.,  70.,  75.]))"
-    print
-    print "-Output-----------------------------------------------------------------------------------"
-    print nice_clevels(-23.1, 70.7, outside=True, cint = 5.0)
+    print("Testing nice_mxmnintvl code.....")
+    print()
+    print( "Answers should look like this....." )
+    print( "(-20.0, 70.0, 9.0)" )
+    print( "-----OUTPUT---------")
+    print( nice_mxmnintvl(-23.1, 70.7, outside=False, cint = 0.0))
+    print( nice_mxmnintvl(-23.1, 70.7, outside=False))
+    print()
+    print( "Testing nice_clevels code.....")
+    print()
+    print( "Answer should look like this.....")
+    print( "(-20.0, 70.0, 5.0, array([-20., -15., -10.,  -5.,   0.,   5.,  10.,  15.,  20.,  25.,  30.")
+    print( "        35.,  40.,  45.,  50.,  55.,  60.,  65.,  70.]))")
+    print()
+    print( "-Output-----------------------------------------------------------------------------------")
+    print( nice_clevels(-23.1, 70.7, outside=False, cint=5.0))
+    print()
+    print( "Answer should look like this.....")
+    print( "(-25.0, 75.0, 5.0, array([-25., -20., -15., -10.,  -5.,   0.,   5.,  10.,  15.,  20.,  25.")
+    print( "        30.,  35.,  40.,  45.,  50.,  55.,  60.,  65.,  70.,  75.]))")
+    print()
+    print( "-Output-----------------------------------------------------------------------------------")
+    print( nice_clevels(-23.1, 70.7, outside=True, cint = 5.0))
