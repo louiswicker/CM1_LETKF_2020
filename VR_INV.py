@@ -14,7 +14,7 @@ import matplotlib.ticker as ticker
 import matplotlib.dates as mdates
 from scipy import ndimage
 
-from Plotting import nice_mxmnintvl, nice_clevels
+from Plotting.cbook2 import nice_mxmnintvl, nice_clevels
 
 _bin_delta = 1
 zbins = 2000. * N.arange(6)
@@ -75,13 +75,8 @@ def getIndexNotEqual(field, value):
 
 if __name__ == "__main__":
 
-    print
-    print "<<<<<===========================================================================================>>>>>>"
-    print
-    print "                                        "
-    print
-    print "     INNOVATION PLOTS         "
-    print
+    print("\n<<<<<===========================================================================================>>>>>>")
+    print("\n\n    INNOVATION PLOTS       \n\n ")
 
     usage = "usage: %prog [options] arg"
     parser = OptionParser(usage)
@@ -95,7 +90,7 @@ if __name__ == "__main__":
     if options.dir:
       dirname = os.path.join(options.dir,_prior_files)
     else:
-      print "\n  ====>  No directory supplied, using %s as prefix \n" % _prior_files
+      print("\n  ====>  No directory supplied, using %s as prefix \n" % _prior_files)
       dirname = os.path.join("./",_prior_files)
 
     if options.title:
@@ -112,7 +107,7 @@ if __name__ == "__main__":
 
     bin_delta = _bin_delta
 
-    nbins = len(file_list) / bin_delta
+    nbins = len(file_list) // bin_delta
     CR_TZ = N.zeros((zbins.size,nbins))
     CR_T  = N.zeros((nbins))
     CR_Z  = N.zeros((zbins.size))
@@ -156,7 +151,7 @@ if __name__ == "__main__":
             secs  = N.concatenate(secsL, axis=0)
             error = N.concatenate(errorL, axis=0)
             kind  = N.concatenate(kindL, axis=0)
-            datebins.append(ncdf.num2date(secs[1],units=sec_utime))
+            datebins.append((ncdf.num2date(secs[1],units=sec_utime)).strftime("%Y%m%d%H%M%S"))
 
             m = m + 1
 
@@ -173,9 +168,9 @@ if __name__ == "__main__":
                     sdHxf       = Hxftmp.std(ddof=1, axis=1).mean()
                     fcst_msi    = N.mean((d - d.mean())**2)
                     consi_ratio = (obs_var[1]**2 + sdHxf**2) / fcst_msi
-                    print "%s  NOBS: %5.5d    %3.3s: %3.1f  ZBIN:  %f  %f  RMSI: %6.3f  M-Innov: %7.3f  Spread: %6.3f  CRatio: %7.4f " \
+                    print("%s  NOBS: %5.5d    %3.3s: %3.1f  ZBIN:  %f  %f  RMSI: %6.3f  M-Innov: %7.3f  Spread: %6.3f  CRatio: %7.4f " \
                     % (file[-22:-3], d.size, "VR", obs_var[1], zbins[k], zbins[k+1], \
-                    N.sqrt(fcst_msi), d.mean(), N.sqrt(obs_var[1]**2 + sdHxf**2), consi_ratio)
+                    N.sqrt(fcst_msi), d.mean(), N.sqrt(obs_var[1]**2 + sdHxf**2), consi_ratio))
                     CR_TZ[k,m] = consi_ratio
                     IN_TZ[k,m] = d.mean()
           
@@ -196,12 +191,12 @@ if __name__ == "__main__":
     cs1=axC.contourf(datebins, zbins/1000., IN_TZ, clevels, cmap=cm.get_cmap('YlOrRd'))
     cs2=axC.contour(datebins,  zbins/1000., IN_TZ, cs1.levels, colors='k')
 
-    start = datebins[0].strftime("%Y%m%d%H%M%S")
-    end   = datebins[-1].strftime("%Y%m%d%H%M%S")
+    start = datebins[0]
+    end   = datebins[-1]
     s     = datetime.strptime(start, "%Y%m%d%H%M%S")
     e     = datetime.strptime(end, "%Y%m%d%H%M%S")
 
-    axC.set_xlim(s, e)
+    axC.set_xlim(start, end)
     axC.set_ylim(zmin,zmax)
 
     maj_loc = mdates.MinuteLocator(interval=2)
@@ -254,7 +249,7 @@ if __name__ == "__main__":
             secs  = N.concatenate(secsL, axis=0)
             error = N.concatenate(errorL, axis=0)
             kind  = N.concatenate(kindL, axis=0)
-            datebins.append(ncdf.num2date(secs[1],units=sec_utime))
+            datebins.append((ncdf.num2date(secs[1],units=sec_utime)).strftime("%Y%m%d%H%M%S"))
 
             m = m + 1
 
@@ -267,9 +262,9 @@ if __name__ == "__main__":
                 sdHxf       = Hxftmp.std(ddof=1, axis=1).mean()
                 fcst_msi    = N.mean((d - d.mean())**2)
                 consi_ratio = (obs_var[1]**2 + sdHxf**2) / fcst_msi
-                print "%s  NOBS: %5.5d    %3.3s: %3.1f  ZBIN:  %f  %f  RMSI: %6.3f  M-Innov: %7.3f  Spread: %6.3f  CRatio: %7.4f " \
+                print("%s  NOBS: %5.5d    %3.3s: %3.1f  ZBIN:  %f  %f  RMSI: %6.3f  M-Innov: %7.3f  Spread: %6.3f  CRatio: %7.4f " \
                 % (file[-22:-3], d.size, "VR", obs_var[1], 0.0, zbins.max(), \
-                N.sqrt(fcst_msi), d.mean(), N.sqrt(obs_var[1]**2 + sdHxf**2), consi_ratio)
+                N.sqrt(fcst_msi), d.mean(), N.sqrt(obs_var[1]**2 + sdHxf**2), consi_ratio))
                 CR_T[m] = consi_ratio
                 IN_T[m] = d.mean()
       
@@ -279,12 +274,12 @@ if __name__ == "__main__":
 
     axX = P.axes(rectX)
 #   cmin, cmax, cint = nice_mxmnintvl(CR_T.min(), CR_T.max(), outside=True, cint=1.0)  # Use this to get limits of the plot
-    start = datebins[0].strftime("%Y%m%d%H%M%S")
-    end   = datebins[-1].strftime("%Y%m%d%H%M%S")
+    start = datebins[0]
+    end   = datebins[-1]
     s     = datetime.strptime(start, "%Y%m%d%H%M%S")
     e     = datetime.strptime(end, "%Y%m%d%H%M%S")
     axX.plot(datebins, IN_T, lw=2.0, color='k')
-    axX.set_xlim(s, e)
+    axX.set_xlim(start, end)
     axX.set_ylim(_cmin, _cmax)
     axX.set_xticklabels([])
     axX.set_ylabel("Innovations")
@@ -340,9 +335,9 @@ if __name__ == "__main__":
             sdHxf       = Hxftmp.std(ddof=1, axis=1).mean()
             fcst_msi    = N.mean((d - d.mean())**2)
             consi_ratio = (obs_var[1]**2 + sdHxf**2) / fcst_msi
-            print "%s  NOBS: %5.5d    %3.3s: %3.1f  ZBIN:  %05.0f  %05.5f  RMSI: %6.3f  M-Innov: %7.3f  Spread: %6.3f  CRatio: %7.4f " \
+            print("%s  NOBS: %5.5d    %3.3s: %3.1f  ZBIN:  %05.0f  %05.5f  RMSI: %6.3f  M-Innov: %7.3f  Spread: %6.3f  CRatio: %7.4f " \
             % (file[-22:-3], d.size, "VR", obs_var[1], zbins[k], zbins[k+1], \
-            N.sqrt(fcst_msi), d.mean(), N.sqrt(obs_var[1]**2 + sdHxf**2), consi_ratio)
+            N.sqrt(fcst_msi), d.mean(), N.sqrt(obs_var[1]**2 + sdHxf**2), consi_ratio))
             CR_Z[k] = consi_ratio
             IN_Z[k] = d.mean()
     
