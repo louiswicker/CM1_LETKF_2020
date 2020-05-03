@@ -259,8 +259,7 @@ if __name__ == "__main__":
             secs  = N.concatenate(secsL, axis=0)
             error = N.concatenate(errorL, axis=0)
             kind  = N.concatenate(kindL, axis=0)
-            datebins.append(ncdf.num2date(secs[1],units=sec_utime))
-            secsbins.append(secs[1])
+            datebins.append((ncdf.num2date(secs[1],units=sec_utime)).strftime("%Y%m%d%H%M%S"))
 
             m = m + 1
 
@@ -289,11 +288,9 @@ if __name__ == "__main__":
 
     axX = P.axes(rectX)
 #   cmin, cmax, cint = nice_mxmnintvl(CR_T.min(), CR_T.max(), outside=True, cint=1.0)  # Use this to get limits of the plot
-    start = datebins[0].strftime("%Y%m%d%H%M%S")
-    end   = datebins[-1].strftime("%Y%m%d%H%M%S")
-    s     = datetime.strptime(start, "%Y%m%d%H%M%S")
-    e     = datetime.strptime(end, "%Y%m%d%H%M%S")
-    axX.plot(secsbins, CR_T, lw=2.0, color='k')
+    s = datebins[0]
+    e = datebins[-1]
+    axX.plot(datebins, CR_T, lw=2.0, color='k')
     axX.set_xlim(s, e)
     axX.set_ylim(_cmin, _cmax)
     axX.set_xticklabels([])
