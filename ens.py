@@ -83,6 +83,7 @@ def meshgrid_general(*args):
 
 #=======================================================================================================================
 # Find the CM1 file for time requested
+
 def FindRestartFiles(exper_filename, myDT, ret_exp=True, ret_DT=True):
 
 # Open pickled experiment filename
@@ -131,7 +132,13 @@ def FindRestartFiles(exper_filename, myDT, ret_exp=True, ret_DT=True):
 
     fileheader = os.path.join(exper['fcst_members'][0],fprefix)
     files = glob.glob(fileheader+"_rst_0*.nc")
-    files = sorted(files,key=os.path.getmtime)
+
+# Quick snippet of code to sort based on file index
+    def getint(name):
+        num = name[:-3].split('_')[-1]  # get rid of *.nc
+        return int(num)
+
+    files = sorted(files, key=getint)
 
     if len(files) > 0:
 
@@ -819,8 +826,6 @@ def PLOT_ONE(mfld, x2d, y2d, map, cint=None, height=0., label = None, ax=None, c
     zoom = kwargs["zoom"]
   else:
     zoom = None
-
-  print(x2d.shape, mfld.shape)
 
   clvls = myclevels[ myclevels != 0.0 ] 
     
