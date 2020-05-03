@@ -115,10 +115,10 @@ def write_prior(ne, kind, value, dates, error, x, y, z, Hxf, Hxfbar, lat, lon, e
   filename = "%s%s" % ("Prior", ".nc" )
     
   if os.path.isfile(filename) != True:
-      print("No Prior file found, creating %s \n" % filename)
+      print(" write_prior:  No Prior file found, creating %s \n" % filename)
       create_prior_file(ne)
   else:
-      print("Prior obs file found, opening %s \n" % filename)
+      print(" write_prior:  Prior obs file found, opening %s \n" % filename)
   
 # create the fileput filename and create new netCDF4 file
 
@@ -134,8 +134,8 @@ def write_prior(ne, kind, value, dates, error, x, y, z, Hxf, Hxfbar, lat, lon, e
 
   obs = N.size(value)
   
-  print("Previous number of obs %d \n" % oo)
-  print("Adding %d to netcdf file \n" % obs)
+  print(" write_prior:  Previous number of obs %d \n" % oo)
+  print(" write_prior:  Adding %d to netcdf file \n" % obs)
   
 # get kind then setup type and units
 
@@ -191,7 +191,7 @@ def write_prior(ne, kind, value, dates, error, x, y, z, Hxf, Hxfbar, lat, lon, e
  
   rootgroup.sync()
   
-  print("Total number of obs in %s file is %d \n" % (filename,len(rootgroup.dimensions['ob_num'])))
+  print(" write_prior:  Total number of obs in %s file is %d \n" % (filename,len(rootgroup.dimensions['ob_num'])))
   rootgroup.close()
 
 ##################################################################################################### 

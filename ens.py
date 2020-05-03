@@ -702,13 +702,13 @@ def calcHx(ens, kind, lat, lon, height, elev, azimuth, missing=None):
   mlons = ens.lonc
   mlats = ens.latc
 
-  print('OBS   LAT MIN/MAX:  ', lat.min(), lat.max())
-  print('MODEL LAT MIN/MAX:  ', mlats.min(), mlats.max())
-  print('OBS   LON MIN/MAX:  ', lon.min(), lon.max())
-  print('MODEL LON MIN/MAX:  ', mlons.min(), mlons.max())
+  print(' calcHx:  OBS   LAT MIN/MAX:  ', lat.min(), lat.max())
+  print(' calcHx:  MODEL LAT MIN/MAX:  ', mlats.min(), mlats.max())
+  print(' calcHx:  OBS   LON MIN/MAX:  ', lon.min(), lon.max())
+  print(' calcHx:  MODEL LON MIN/MAX:  ', mlons.min(), mlons.max())
 
-  print('OBS   HGT MIN/MAX:  ', height.min(), height.max())
-  print('MODEL HGT MIN/MAX:  ', ens.hgt+ens.zc.data.min(), ens.hgt+ens.zc.data.max())
+  print(' calcHx:  OBS   HGT MIN/MAX:  ', height.min(), height.max())
+  print(' calcHx:  MODEL HGT MIN/MAX:  ', ens.hgt+ens.zc.data.min(), ens.hgt+ens.zc.data.max())
 
   b = N.zeros([5,ens.ne])
 

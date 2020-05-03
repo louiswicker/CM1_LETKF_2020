@@ -198,7 +198,6 @@ if __name__ == "__main__":
   dt     = DT.timedelta(0,int(window/2))
   begin  = analysis_time - dt
   ending = analysis_time + dt
-
     
   print("\n --> ComputeHx:  Using pyDart to search with condition: " + condition  )
   print("\n --> ComputeHx:  Using pyDart to search with begin time of: ", begin.timetuple()[:6])
@@ -214,7 +213,6 @@ if __name__ == "__main__":
   
   if len(ob_f.index) > 0:
     print("\n --> ComputeHx:  Total number of obs found at search time: %s \n" % len(ob_f.index))
-    print(ob_f.index)
   else:
     print("\n --> ComputeHx:  No obs found at search time:  %s exiting......\n" % (analysis_time))
     sys.exit(0)
