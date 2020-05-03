@@ -82,10 +82,10 @@ defaults = {
 # Parameters for the additive noise
 
             "ADD_NOISE": {
-                          "min_dbz_4pert":  10.,
-                          'tpert':          3.0,
-                          'wpert':          2.0,
-                          'tdpert':         0.5,
+                          "min_dbz_4pert":  25.,
+                          'tpert':          1.0,
+                          'wpert':          0.5,
+                          'tdpert':         0.25,
                           'upert':          1.0,
                           'vpert':          1.0,
                           'qvpert':         0.0,    # this number means add perturbations up to 1 g/kg (but limited to 99% RH)
