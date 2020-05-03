@@ -10,6 +10,8 @@ date
 
 # run job script
 
+setenv PYTHONUNBUFFERED TRUE
+
 python run_simple_exper.py >& $dir.out
 
 cp -R RUN_LETKF $dir
