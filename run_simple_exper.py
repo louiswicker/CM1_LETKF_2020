@@ -29,7 +29,7 @@ for time in times:
 
     if time != times[-1]:  # dont the crefs or last 5 min forecast - do the pure forecast at the end
 
-        os.system("/Users/Louis.Wicker/cm1_letkf_2020/ens.py -e RUN_LETKF/RUN_LETKF.exp --crefperts -t %s --write" % (time))
+#       os.system("/Users/Louis.Wicker/cm1_letkf_2020/ens.py -e RUN_LETKF/RUN_LETKF.exp --crefperts -t %s --write" % (time))
 
         os.system("/Users/Louis.Wicker/cm1_letkf_2020/run_fcst.py -e RUN_LETKF/RUN_LETKF.exp --run_time 300 -t %s" % (time))
 

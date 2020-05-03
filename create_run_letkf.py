@@ -111,7 +111,7 @@ defaults = {
                            "assim_freq":         300,       # type(int):  used to set asynchronous DA assimilation
                            "async_freq":         300,
                            "cook":              1200,       # type(int): time to pre-cook initial perturbations
-                           "additive_noise":    [True,1],   # type(list): whether to add noise based on 1=cref, 2 = adaptive-inflation field
+                           "additive_noise":    [False,1],   # type(list): whether to add noise based on 1=cref, 2 = adaptive-inflation field
                            "mpass":             False,
                            "writeFcstMean":     True,
                            "writeAnalMean":     True,
