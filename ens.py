@@ -1165,7 +1165,7 @@ def ens_IC_ZeroUV(ens, restore=False):
            
 #===============================================================================
 #
-def ens_GRID_RELECTIVITY(ens, ob_file=None, plot=False, composite=True):
+def ens_GRID_RELECTIVITY(ens, ob_file=None, plot=False, cref=True):
 #
 #===============================================================================
 
@@ -1289,7 +1289,7 @@ def ens_GRID_RELECTIVITY(ens, ob_file=None, plot=False, composite=True):
   
   dbz2d = N.zeros((1,))
 
-  if composite:
+  if cref:
 
     dbz2d = dbz3d.max(axis=0)
   
@@ -2082,8 +2082,6 @@ def read_CM1_ens(files, experiment, state_vector=None, DateTime=None, time_index
 
   ens.time         = f.variables['time'][0]  # we need this here to create datetime array
 
-  print(ens.time)
- 
 # create a list of datetime objects from the model time array
  
   ens.datetime     = [ens.coards + datetime.timedelta(seconds=int(ens.time))]
