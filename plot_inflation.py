@@ -12,10 +12,11 @@ import os
 import ctables
 import datetime as DT
 from mpl_toolkits.basemap import Basemap
-from mpl_toolkits.axes_grid1.anchored_artists import AnchoredText
+from matplotlib.offsetbox import AnchoredText
+from matplotlib import ticker
 import time as timeit
-from cbook2 import *
-import glob, pickle
+from Plotting.cbook2 import *
+import glob, json
 from Plotting import shapefiles, viridis
 
 interactive = True
@@ -28,6 +29,12 @@ _inflation_ctable = viridis
 _inflation_clevels = N.linspace(1.01, 5.01, num=21, endpoint=True)
 _inflation_levels = [2, 10, 30]
 _fig_size = (12,12)
+
+#===============================================================================
+#
+def mtokm(val,pos):
+  """Convert m to km for formatting axes tick labels"""
+  val=val/1000.0
 
 #===============================================================================
 def mymap(x, y, glat, glon, scale = 1.0, ax = None, ticks = True, resolution='c',\
@@ -97,9 +104,12 @@ def plot_inflation(inflation, x, y, z, glat, glon, shape_env=None):
     plot    = map.contour(xx, yy,  infl[nlevel], _inflation_clevels[::2], colors='k', linewidths=0.5)
     title   = ("Inflation Factor Z = %3.2f km" % (z[nlevel]/1000.))
     ax1.set_title(title, fontsize=10)
-#   if zoom:
-#     ax1.set_xlim(1000*zoom[0],1000*zoom[1])
-#     ax1.set_ylim(1000*zoom[2],1000*zoom[3])
+    ax1.tick_params(axis='both', which='major', labelsize=10)
+    ax1.tick_params(axis='both', which='minor', labelsize=8)
+    ax1.xaxis.set_major_formatter(ticker.FuncFormatter(mtokm))
+    ax1.yaxis.set_major_formatter(ticker.FuncFormatter(mtokm))
+    ax1.set_xlabel("%s" % ('X (km)'))
+    ax1.set_ylabel("%s" % ('Y (km)'))
 
     at = AnchoredText("Max Inflation: %4.1f" % (infl[nlevel].max()), loc=4, prop=dict(size=6), frameon=True,)
     at.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
@@ -118,9 +128,11 @@ def plot_inflation(inflation, x, y, z, glat, glon, shape_env=None):
     plot    = map.contour(xx, yy,  infl[nlevel], _inflation_clevels[::2], colors='k', linewidths=0.5)
     title   = ("Inflation Factor Z = %3.2f km" % (z[nlevel]/1000.))
     ax2.set_title(title, fontsize=10)
-#   if zoom:
-#     ax2.set_xlim(1000*zoom[0],1000*zoom[1])
-#     ax2.set_ylim(1000*zoom[2],1000*zoom[3])
+    ax2.tick_params(axis='both', which='major', labelsize=10)
+    ax2.tick_params(axis='both', which='minor', labelsize=8)
+    ax2.xaxis.set_major_formatter(ticker.FuncFormatter(mtokm))
+    ax2.yaxis.set_major_formatter(ticker.FuncFormatter(mtokm))
+    ax2.set_xlabel("%s" % ('X (km)'))
 
     at = AnchoredText("Max Inflation: %4.1f" % (infl[nlevel].max()), loc=4, prop=dict(size=6), frameon=True,)
     at.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
@@ -139,9 +151,11 @@ def plot_inflation(inflation, x, y, z, glat, glon, shape_env=None):
     plot    = map.contour(xx, yy,  infl[nlevel], _inflation_clevels[::2], colors='k', linewidths=0.5)
     title   = ("Inflation Factor Z = %3.2f km" % (z[nlevel]/1000.))
     ax3.set_title(title, fontsize=10)
-#   if zoom:
-#     ax2.set_xlim(1000*zoom[0],1000*zoom[1])
-#     ax2.set_ylim(1000*zoom[2],1000*zoom[3])
+    ax3.tick_params(axis='both', which='major', labelsize=10)
+    ax3.tick_params(axis='both', which='minor', labelsize=8)
+    ax3.xaxis.set_major_formatter(ticker.FuncFormatter(mtokm))
+    ax3.yaxis.set_major_formatter(ticker.FuncFormatter(mtokm))
+    ax3.set_xlabel("%s" % ('X (km)'))
 
     at = AnchoredText("Max Inflation: %4.1f" % (infl[20].max()), loc=4, prop=dict(size=6), frameon=True,)
     at.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
@@ -159,9 +173,11 @@ def plot_inflation(inflation, x, y, z, glat, glon, shape_env=None):
     plot    = map.contour(xx, yy,  infl.max(axis=0), _inflation_clevels[::2], colors='k', linewidths=0.5)
     title   = ("Max Inflation Factor in Column")
     ax4.set_title(title, fontsize=10)
-#   if zoom:
-#     ax2.set_xlim(1000*zoom[0],1000*zoom[1])
-#     ax2.set_ylim(1000*zoom[2],1000*zoom[3])
+    ax4.set_title(title, fontsize=10)
+    ax4.tick_params(axis='both', which='major', labelsize=10)
+    ax4.tick_params(axis='both', which='minor', labelsize=8)
+    ax4.xaxis.set_major_formatter(ticker.FuncFormatter(mtokm))
+    ax4.yaxis.set_major_formatter(ticker.FuncFormatter(mtokm))
 
     at = AnchoredText("Max Inflation: %4.1f" % (infl.max()), loc=4, prop=dict(size=6), frameon=True,)
     at.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
@@ -193,7 +209,7 @@ if options.exp == None:
     sys.exit(-1)
 else:
     with open(options.exp, 'rb') as f:
-        exper = pickle.load(f)
+        exper = json.load(f)
 
 if options.datetime == None:
     parser.print_help()
@@ -226,7 +242,7 @@ fig.suptitle(title, fontsize=16)
 newbase = os.path.join("./", os.path.split(newfile)[0], "Plots", os.path.split(newfile)[1][:-2])
 
 filename = "%s%s" % (newbase, "pdf")
-print "\n Saving file %s" % (filename)
+print("\n Saving file %s" % (filename))
 fig.savefig(filename, format="pdf", dpi=300)
  
 if options.show:

@@ -52,7 +52,7 @@ defaults = {
 # Initial 1D perturbations used in ens_IC_pertUV
 
             "pscale":   2.0,
-            "rampS":    3.0,
+            "rampS":    4.0,
             "rampZ":    10000.,
 
 # Initial 3D perturbations used in ens_IC_pert_from_box
@@ -100,8 +100,8 @@ defaults = {
                         
            "DA_PARAMS" : {
                            "obs_errors":     {           # the errors that are used for observations
-                                              11:  ["VR", 3.0],
-                                              12:  ["DBZ",7.5],
+                                              11:  ["VR", 2.0],
+                                              12:  ["DBZ",5.0],
                                              },
                            "aInflate":             1,       # type(int): 0 => no adapt inflat / 1 => LETKF AI / 2 => WH2010 RTPS / 3 => RTPP
                            "outlier":              3,       # type(int): Outlier threshold:  None means dont threshold, else set to sigma (e.g., 3, 5, 7 etc.)
