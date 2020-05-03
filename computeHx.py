@@ -20,7 +20,7 @@ diag = True
 
 # Stuff to set observation std deviation in filter
 
-_default_obs_error = {11: ["VR", 3.0], 12:["DBZ", 7.5]}
+_default_obs_error = {11: ["VR", 2.0], 12:["DBZ", 5.0]}
   
 #-----------------------------------------------------------------------------------------------------------------------------------
 # Main program
@@ -94,7 +94,7 @@ if __name__ == "__main__":
     obs_error = exper['DA_PARAMS']['obs_errors']
     print("\n --> ComputeHx:  using the obs errors from the EXPER file:  %s" % obs_error)
   else:
-    print("\n --> ComputeHx:  using the obs errors from the command line")
+    print("\n --> ComputeHx:  using the obs errors from command line")
     obs_error = _default_obs_error
     for key in obs_error.keys():
       for n, item in enumerate(options.obserr):
@@ -198,14 +198,16 @@ if __name__ == "__main__":
   dt     = DT.timedelta(0,int(window/2))
   begin  = analysis_time - dt
   ending = analysis_time + dt
+
     
   print("\n --> ComputeHx:  Using pyDart to search with condition: " + condition  )
-  print("\n --> ComputeHx:  Using pyDart to search with begin time of: ", begin.strftime("%Y-%m-%d %H:%M:%S"))
-  print("\n --> ComputeHx:  Using pyDart to search with end   time of: ", ending.strftime("%Y-%m-%d %H:%M:%S"))
-  print(begin.timetuple()[:6])
-  print(ending.timetuple()[:6])
+  print("\n --> ComputeHx:  Using pyDart to search with begin time of: ", begin.timetuple()[:6])
+  print("\n --> ComputeHx:  Using pyDart to search with end   time of: ", ending.timetuple()[:6])
     
+# I used to try and limit lat/lon of search, but gave up 
+
 # ob_f.search(start=begin.timetuple()[:6], end=ending.timetuple()[:6], condition=condition)
+
   ob_f.search(start=begin.timetuple()[:6], end=ending.timetuple()[:6])
 
 # number of observations, if there are none, kick out of the loop...
@@ -253,9 +255,15 @@ if __name__ == "__main__":
     
 # Overide the file observation std deviations with either defaults at top of script or input parameters
 
-  for n, kk in enumerate(kind):
-    if kk in obs_error:  err_var[n] = obs_error[kk][1]**2.0
-  
+  for key in obs_error.keys():
+    print_once = True
+    for n, item in enumerate(kind):
+      if int(item) == int(key):
+         err_var[n] = obs_error[key][1]**2.0
+         if print_once:
+           print("\n --> ComputeHx:  Changing %s observational error to:  %s" % (obs_error[key][0],obs_error[key][1]))
+           print_once = False
+
 # Here we choose to create a coordinate system of x/y's based from the SW corner (lat,lon) of model grid.
 # The observations' new x/y's are then in the model's coordinate system relative to reference (lat,lon) of grid
 
