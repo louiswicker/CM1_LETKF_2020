@@ -1198,9 +1198,9 @@ def ens_GRID_RELECTIVITY(ens, ob_file=None, plot=False, composite=True):
 # number of observations, if there are none, stop program, something is wrong
 
   if len(ob_f.index) >= 50:
-    print("\n ==> ens_GRID_REFL:  Total number of obs found at search time: %s \n" % len(ob_f.index))
+    print("\n  ==> ens_GRID_REFL:  Total number of obs found at search time: %s \n" % len(ob_f.index))
   else:
-    print("\n ==> ens_GRID_REFL:  Insufficient number of obs (<=50) found at search time:  %d obs \n" % (len(ob_f.index)))
+    print("\n  ==> ens_GRID_REFL:  Insufficient number of obs (<=50) found at search time:  %d obs \n" % (len(ob_f.index)))
     return None
 
 # using the search index generated from above, obtain the location, data, and type
@@ -1303,6 +1303,10 @@ def ens_ADDITIVE_NOISE(ens, ob_file=None, plot=False, cref=True):
 #
 #===============================================================================
 
+  print("\n  ----------------------------------------------------------------------")
+  print("\n                 BEGIN ADD_NOISE                                        ")
+  print("\n  ----------------------------------------------------------------------")
+
   t0 = timer()
   
   debugAN = False
@@ -1331,11 +1335,10 @@ def ens_ADDITIVE_NOISE(ens, ob_file=None, plot=False, cref=True):
 
   if cref == True:
   
-    f3d     = ens_GRID_RELECTIVITY(ens, ob_file=ob_file)
+    f3d     = ens_GRID_RELECTIVITY(ens, ob_file=ob_file, cref=cref)
 
-    #    if f3d == None:
-    if len(f3d) > 0:
-
+    if f3d == None:
+      print("\n  ==> ens_ADDITIVE_NOISE: Not enough reflectivity obs to grid, exiting ADDITIVE_NOISE")
       return
 
     f3d_min = ens.experiment['ADD_NOISE']['min_dbz_4pert']
@@ -1437,6 +1440,10 @@ def ens_ADDITIVE_NOISE(ens, ob_file=None, plot=False, cref=True):
     ens_PLOT_MEAN_STDDEV(ens, klevel = 4, savefig="ADDITIVE_NOISE_PLOT.pdf")
        
   if time_all:  print("\n Wallclock time to run ADDITIVE_NOISE:", round(timer() - t0, 3), " sec")
+
+  print("\n  ----------------------------------------------------------------------")
+  print("\n                 END ADD_NOISE                                          ")
+  print("\n  ----------------------------------------------------------------------")
 
 #===============================================================================
 #
