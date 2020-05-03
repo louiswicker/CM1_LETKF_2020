@@ -1206,7 +1206,7 @@ def ens_GRID_RELECTIVITY(ens, ob_file=None, plot=False, cref=True):
     print("\n  ==> ens_GRID_REFL:  Total number of obs found at search time: %s \n" % len(ob_f.index))
   else:
     print("\n  ==> ens_GRID_REFL:  Insufficient number of obs (<=50) found at search time:  %d obs \n" % (len(ob_f.index)))
-    return None
+    return 'None'
 
 # using the search index generated from above, obtain the location, data, and type
 
@@ -1340,25 +1340,26 @@ def ens_ADDITIVE_NOISE(ens, ob_file=None, plot=False, cref=True):
 
   if cref == True:
   
-    f3d     = ens_GRID_RELECTIVITY(ens, ob_file=ob_file, cref=cref)
+    f3d = ens_GRID_RELECTIVITY(ens, ob_file=ob_file, cref=cref)
 
-    if f3d == None:
+    if type(f3d) == str :
       print("\n  ==> ens_ADDITIVE_NOISE: Not enough reflectivity obs to grid, exiting ADDITIVE_NOISE")
       return
 
-    f3d_min = ens.experiment['ADD_NOISE']['min_dbz_4pert']
-    print("\n ==> ens_ADDITIVE_NOISE: Observed reflectivity gridded:  Max:  %4.2f  Min:  %4.2f" % (f3d.max(), f3d.min()))
+    else:
+      f3d_min = ens.experiment['ADD_NOISE']['min_dbz_4pert']
+      print("\n ==> ens_ADDITIVE_NOISE: Observed reflectivity gridded:  Max:  %4.2f  Min:  %4.2f" % (f3d.max(), f3d.min()))
 
   else:
   
 # Use the adaptive inflation file as the mask
 
     infilename = "Inflation_%s.nc" % (ens.datetime[0].strftime("%Y-%m-%d_%H:%M:%S"))
-    newfile = os.path.join(ens.experiment['base_path'], infilename)  
-    file_obj = netCDF4.Dataset(newfile, "r")
-    f3d      = file_obj.variables['inflation'][...]
+    newfile    = os.path.join(ens.experiment['base_path'], infilename)  
+    file_obj   = netCDF4.Dataset(newfile, "r")
+    f3d        = file_obj.variables['inflation'][...]
+    f3d_min    = 2.0
     file_obj.close()
-    f3d_min  = 2.0
     
     print("\n ==> ens_ADDITIVE_NOISE: Inflation file read in:  Max:  %4.2f  Min:  %4.2f" % (f3d.max(), f3d.min()))
 
