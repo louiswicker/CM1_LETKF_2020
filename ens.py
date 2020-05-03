@@ -919,7 +919,7 @@ def ens_PLOT_9PANEL(ens, klevel = 6, obs=False, savefig=None, cparams = None, va
 # get gridded observations
 
   if obs:
-     f3d = ens_GRID_RELECTIVITY(ens, composite=False)
+     f3d = ens_GRID_RELECTIVITY(ens, cref=False)
      print("\n --> PLOT_9PANEL:  Interpolated reflectivity")
 
   fig, ax_grid = P.subplots(3, 3, figsize=(12,12), sharex=True, sharey=True)
@@ -948,7 +948,7 @@ def ens_PLOT_9PANEL(ens, klevel = 6, obs=False, savefig=None, cparams = None, va
     if n == 4 and obs:
       mfld = N.ma.masked_less_equal(f3d[5,:,:], 0.0)
       label = "OBSERVED DBZ"
-      PLOT_ONE(mfld, x2d, y2d, map, clevels=clevels, height=ens.zc[klevel], label = label, ax = ax, \
+      PLOT_ONE(mfld, x2d, y2d, map, clevels=clevels, height=ens.zc[5], label = label, ax = ax, \
                counties=True, cmap=ctables.REF_default, zoom = zoom, **kwargs)
     else:
       print("\n Plotting member %d" % (mem[n]+1))
